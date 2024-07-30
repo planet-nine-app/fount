@@ -58,6 +58,9 @@ flowchart LR
 When the spell resolves, the bot will be assigned Nineum by Planet Nine, which it can then transfer to whomever it is that completes the bounty.
 It can also grant points at that time, and eventually, should someone supply it, money.
 
+The bot, being the holder of the rewards for the bounty, can be used to aggregate rewards too.
+So if multiple people want to support the bounty they can spend mp to add to the rewards as well.
+
 ## API
 
 So there're some basic CRUD operations for user management. 
@@ -207,7 +210,7 @@ The cool APIs are `resolve`, `transfer`, and `grant` at the bottom.
 > |--------------|-----------|-------------------------|-----------------------------------------------------------------------|
 > | timestamp    |  true     | string                  | in a production system timestamps prevent replay attacks  |
 > | uuid         |  true     | string                  | the granter's uuid
-> | receiverUUID |  true     | string                  | receiver's uuid
+> | destinationUUID |  true     | string                  | receiver's uuid
 > | amount       |  true     | Int                     | the amount of points to grant
 > | description  |  false    | string                  | An optional description of the grant
 > | signature    |  true     | string (signature)      | the signature from sessionless for the message  |
