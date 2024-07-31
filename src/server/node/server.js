@@ -62,7 +62,7 @@ app.get('/user/pubKey/:pubKey', async (req, res) => {
   res.send(foundUser);
 });
 
-app.post('/rsolve', async (req, res) => {
+app.post('/resolve', async (req, res) => {
   const payload = req.body;
 
   let resolved = true;
@@ -84,7 +84,7 @@ app.post('/rsolve', async (req, res) => {
     }
   }
 
-  const user = await getUser(payload.casterUUID);
+  const caster = await getUser(payload.casterUUID);
   const message = JSON.stringify({
     timestamp: payload.timestamp,
     spell: payload.spell,
@@ -94,9 +94,11 @@ app.post('/rsolve', async (req, res) => {
     ordinal: payload.ordinal,
   });
 
-  if(!sessionless.verifySignature(payload.casterSignature, message, user.pubKey)) {
+  if(!sessionless.verifySignature(payload.casterSignature, message, caster.pubKey)) {
     resolved = false;
   }
+
+  resolved = await user.spendPower(caster, payload.mp);
 
   if(resolved) {
     const signatureMap = {};

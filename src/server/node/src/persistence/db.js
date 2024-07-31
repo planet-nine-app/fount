@@ -10,22 +10,12 @@ const db = {
   getUser: async (uuid) => {
     const user = await client.get(`user:${uuid}`);
     const parsedUser = JSON.parse(user);
-console.log(`parsedUser: ${JSON.stringify(parsedUser)}`);
-console.log(uuid);
-    const currentKeys = await sessionless.getKeys();
-    parsedUser.keys.interactingKeys.julia = currentKeys.pubKey;
-    parsedUser.pendingPrompts = await db.getPendingPrompts(parsedUser);
-    parsedUser.messages = await db.getMessages(parsedUser);
     return parsedUser;
   },
 
   putUser: async (user) => {
     const uuid = sessionless.generateUUID();
     user.uuid = uuid;
-    user.keys = {
-      interactingKeys: {},
-      coordinatingKeys: {}
-    };
     await client.set(`user:${uuid}`, JSON.stringify(user));
     return uuid;
   },
@@ -36,10 +26,20 @@ console.log(uuid);
   },
 
   deleteUser: async (user) => {
-    const resp = await client.sendCommand(['DEL', `user:${user.uuid}`]);
+    await client.sendCommand(['DEL', `user:${user.uuid}`]);
 
     return true;
   },
+
+  getNineum: async (user) => {
+    return await client.get(`user:nineum:${user.uuid}`);
+  },
+
+  saveNineum: async (user, newNineum) => {
+    await client.set(`user:nineum:${user.uuid}`, JSON.stringify({nineum: newNineum}));
+
+    return true;
+  }
 };
 
 export default db;
