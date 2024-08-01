@@ -1,4 +1,5 @@
 import db from '../persistence/db.js';
+import nineum from '../nineum/nineum.js';
 import dayjs from 'dayjs';
 
 const maxMPAndRegenerationRate = { // These magic numbers have an interesting future role. The idea
@@ -6,23 +7,27 @@ const maxMPAndRegenerationRate = { // These magic numbers have an interesting fu
                                       // use it, everyone will be able to do more stuff. Not sure how
                                       // that fits now, but I'm gonna keep them for now.
   "maxMP": 1000,  
-  "mpRegenerationRate": 1.666667,
+  "regenerationRate": 1.666667,
 };
 
 const mpToNineumRatio = 200; // Another magic number (really these are all config settings, but I didn't 
                                 // feel like adding a config at this point since it might change
 
 const calculateMP = (user) => {
+console.log('start', user.mp);
   const maxMP = maxMPAndRegenerationRate.maxMP;
   const lastMPUsed = user.lastMPUsed;
   const regenerationRate = maxMPAndRegenerationRate.regenerationRate;
 
   const now = dayjs();
-  const lastUsed = moment(lastMPUsed);
+  const lastUsed = dayjs(lastMPUsed);
   const differenceInMinutes = now.diff(lastUsed, 'minutes');
+console.log('diff', differenceInMinutes, 'reg', regenerationRate);
   const mpToAdd = Math.floor(differenceInMinutes * regenerationRate);
+console.log('mpToAdd', mpToAdd);
 
   let mp = user.mp;
+console.log('mp', mp, 'mpToAdd', mpToAdd, 'maxMP', maxMP);
   if(mp + mpToAdd > maxMP) {
     user.mp = maxMP;
   } else {
@@ -58,19 +63,31 @@ const user = {
     let foundUser = await db.getUser(uuid);
     foundUser = calculateMP(foundUser);
     foundUser = calculateExperience(foundUser);
-    await db.putUser(foundUser);
+    await db.saveUser(foundUser);
     return foundUser;
   },
 
-  putUser: async (newUser) => {
+  getUserByPublicKey: async (pubKey) => {
+    let foundUser = await db.getUserByPublicKey(pubKey);
+    foundUser = calculateMP(foundUser);
+    foundUser = calculateExperience(foundUser);
+    await db.saveUser(foundUser);
+    return foundUser;
+  },
+
+  putUser: async (newUser, pubKey) => {
     newUser.mp = maxMPAndRegenerationRate.maxMP;
     newUser.lastMPUsed = new Date().getTime();
     newUser.nineumCount = 0;
-    const uuid = await db.putUser(newUser);
+    const uuid = await db.putUser(newUser, pubKey);
 
     newUser.uuid = uuid;
 
     return newUser;
+  },
+
+  getNineum: async (foundUser) => {
+    return await db.getNineum(foundUser);
   },
 
   deleteUser: async (userToDelete) => {
@@ -88,10 +105,13 @@ const user = {
       newNineum.push(constructedNineum);
     }
     
-    const success = await db.saveNineum(user, newNineum);
+    const success = await db.saveNineum(caster, newNineum);
 
     if(success) {
+console.log(caster.mp);
+console.log(amount);
       caster.mp -= amount;
+console.log(caster.mp);
       await db.saveUser(caster);
     }
 

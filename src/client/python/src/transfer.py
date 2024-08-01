@@ -2,12 +2,12 @@ from src.network.network import get, post
 from sessionless import SessionlessSecp256k1
 import time
 
-async def transferNineum(uuid, destnationUUID, nineumUniqueIds, price, currency):
+async def transfer(uuid, destinationUUID, nineumUniqueIds, price, currency, get_keys):
     sessionless = SessionlessSecp256k1()
 
     timestamp = f'{round(time.time() * 1000)}'
-    message = f'{timestamp}{uuid}{destinationUUID}{nineumUniqueIds.join('')}{price}{currency}'
-    signature = await sessionless.sign(message.encode('ascii'), get_key)
+    message = f'{timestamp}{uuid}{destinationUUID}{''.join(nineumUniqueIds)}{price}{currency}'
+    signature = await sessionless.sign(message.encode('ascii'), get_keys)
 
     payload = {
         "timestamp": timestamp,
@@ -19,6 +19,6 @@ async def transferNineum(uuid, destnationUUID, nineumUniqueIds, price, currency)
         "signature": signature
     }
 
-    response = post(url=f'user/{uuid}/transfer', payload=payload)
+    response = await post(f'user/{uuid}/transfer', payload)
 
     return response

@@ -1,10 +1,11 @@
+import db from '../persistence/db.js';
 import dayjs from 'dayjs';
 import crypto from 'crypto';
 
 const systemStartTime = 1722399380889;
 
 function roll() {
-  return crypto.random(0, 10000) / 10000;
+  return crypto.randomInt(0, 10000) / 10000;
 };
 
 const chargeSet = {
@@ -129,19 +130,18 @@ function zeroPad(str, places) {
 };
 
 const nineum = {
-  transferNineum: (sourceUser, destinationUser, nineumUniqueIds, price, currency) => {
+  transferNineum: async (sourceUser, destinationUser, nineumUniqueIds, price, currency) => {
     // Price and currency are ignored for now, but paid transfers will be coming
 
     const updatedUser = await db.transferNineum(sourceUser, destinationUser, nineumUniqueIds);
     return updatedUser;
   },
 
-  constructNineum: () => {
+  constructNineum: async () => {
     const universe = '01';
-    const address = '00000002';
+    const address = '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
     let flavor = '';
     let ordinal = '';
-    const uuid = user.uuid;
 
     const charge = getOneFromSet(chargeSet);
     const direction = getOneFromSet(directionSet);
@@ -155,9 +155,10 @@ const nineum = {
     let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
     const year = zeroPad('' + yearDiff, 2);
 
-    ordinal = await db.countForFlavorOfNineum(flavor) + 1;
+    const flavorCount = await db.countForFlavorOfNineum(flavor);
+    ordinal = flavorCount + 1;
 
-    return univers + address + flavor + year + ordinal;
+    return universe + address + flavor + year + ordinal;
   }
 
 };
