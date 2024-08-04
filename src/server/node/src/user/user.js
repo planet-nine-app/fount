@@ -33,6 +33,7 @@ console.log('mp', mp, 'mpToAdd', mpToAdd, 'maxMP', maxMP);
   } else {
     user.mp = mp + mpToAdd;
   }
+  user.maxMP = maxMP;
   return user;
 };
 
@@ -77,7 +78,13 @@ const user = {
 
   putUser: async (newUser, pubKey) => {
     newUser.mp = maxMPAndRegenerationRate.maxMP;
+    newUser.maxMP = maxMPAndRegenerationRate.maxMP;
     newUser.lastMPUsed = new Date().getTime();
+
+    newUser.experience = 0;
+    newUser.lastExperienceCalculated = new Date().getTime() + '';
+    newUser.experiencePool = 0;
+
     newUser.nineumCount = 0;
     const uuid = await db.putUser(newUser, pubKey);
 
@@ -116,6 +123,43 @@ console.log(caster.mp);
     }
 
     return success;
+  },
+
+  spendMoney: async (caster, payload, totalCost) => {
+   // const stripe = require('stripe')('stripe-token');
+
+    const totalMinimum = payload.gateways.reduce((acc, cur) => acc + cur.minimumCost, 0);
+    const totalDiff = totalCost - totalMinimum;
+    if(totalDiff < 0) {
+      return false;
+    }
+    const additional = Math.floor(totalDiff / (payload.gateways.length + 1));
+
+    const charge = await stripe.charges.create({
+      amount: totalCost, // Amount in cents
+      currency: 'usd',
+      source: 'tok_visa', // payment source for user
+      transfer_group: 'GROUP_1',
+      description: 'Charge for order 123'
+    });   
+
+    const transferPromises = gatewayUsers.map((gatewayUser, index) => {
+      return stripe.transfers.create({
+        amount: payload.gateways[index].minimumCost + additional,
+        currency: 'usd',
+        destination: gatewayUser.stripeAccountId, // ID of the first connected account
+        transfer_group: 'GROUP_1'
+      });
+    });
+
+    transferPromises.push(stripe.transfers.create({
+      amount: additional,
+      currency: 'usd',
+      destination: '<planet nine account>',
+      transfer_group: 'GROUP_1'
+    }));
+
+    const transfers = await Promise.all(transferPromises);
   }
 };
 

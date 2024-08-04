@@ -76,8 +76,6 @@ const getNineum = async (req, res) => {
   res.send(nineum);
 };
 
-console.log(getNineum);
-
 export {
   putUser,
   getUserByUUID,

@@ -33,6 +33,64 @@ const getPlaidToken = async (req, res) => {
   }
 };
 
+const getStripePaymentIntent = async (req, res) => {
+  try {
+console.log('trying to get payment intent');
+    const uuid = req.params.uuid;
+    const timestamp = req.query.timestamp;
+    const amount = req.query.amount;
+    const currency = req.query.currency;
+    const signature = req.query.signature;
+
+    const foundUser = await user.getUser(uuid);
+
+    const message = uuid + timestamp + amount + currency;
+    console.log(message);
+    console.log(foundUser.pubKey);
+    console.log(signature);
+    if(!sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status = 403;
+      return res.send({error: 'Auth error'});
+    }
+console.log('past auth');
+
+    const customerId = foundUser.stripeAccountId || (await stripe.customers.create()).id;
+    if(foundUser.stripeAccountId !== customerId) {
+      foundUser.stripeAccountId = customerId;
+      await user.saveUser(foundUser);
+    }
+console.log('got customerId');
+
+    const ephemeralKey = await stripe.ephemeralKeys.create(
+      {customer: customer.id},
+      {apiVersion: '2024-06-20'}
+    );
+console.log('got ephemeral key');
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: currency,
+      customer: customer.id,
+      // In the latest version of the API, specifying the `automatic_payment_methods` parameter
+      // is optional because Stripe enables its functionality by default.
+      automatic_payment_methods: {
+	enabled: true,
+      },
+    });
+console.log('got payment intent');
+
+    res.send({
+      paymentIntent: paymentIntent.client_secret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customer.id,
+      publishableKey: '<publishableKey>'
+    });
+  } catch(err) {
+    res.status = 404;
+    res.send({error: err});
+  }
+};
+
 const putStripeAccount = async (req, res) => {
   try {
     const body = req.body;
@@ -70,7 +128,7 @@ const putStripeAccount = async (req, res) => {
   }
 };
 
-const putStripeCard =  async (req, res) => {
+const putStripeIssueCard =  async (req, res) => {
   try {
     const body = req.body;
     const timestamp = body.timestamp;
@@ -83,7 +141,8 @@ const putStripeCard =  async (req, res) => {
     const foundUser = await user.getUser(uuid);
     const message = timestamp + uuid + cardHolder // cardHolder needs to be deconstructed
     if(!sessionless.verifySignature(message, signature, foundUser.pubKey)) {
-      throw handleError('auth error');
+      res.status(403);
+      return res.send({error: 'auth error'});
     }
     const cardholder = await stripe.issuing.cardholders.create(cardHolder); // this is bad naming
    // maybe something to do with terms
@@ -105,8 +164,47 @@ const putStripeCard =  async (req, res) => {
   }
 };
 
+const putStripeCustomer = async (req, res) => {
+  try {
+    // Set your secret key. Remember to switch to your live secret key in production.
+    // See your keys here: https://dashboard.stripe.com/apikeys
+    // const stripe = require('stripe')('stripe-key');
+
+    const body = req.body;
+    const uuid = req.params.uuid;
+    const timestamp = body.timestamp;
+    const name = body.name;
+    const email = body.email;
+    const signature = body.signature;
+
+    const message = timestamp + uuid + name + email;
+
+    const foundUser = await user.getUser(uuid);
+
+    if(!sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status = 403;
+      res.send({error: 'auth error'});
+    }
+
+    const customer = await stripe.customers.create({
+      name,
+      email,
+    });
+
+    foundUser.stripeAccountId = customer.id;
+    await user.saveUser(foundUser);
+
+    res.send(foundUser);
+  } catch(err) {
+    res.status = 404;
+    res.send({error: err});
+  }
+};
+
 export {
   getPlaidToken,
+  getStripePaymentIntent,
   putStripeAccount,
-  putStripeCard
+  putStripeIssueCard,
+  putStripeCustomer
 };

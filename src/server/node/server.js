@@ -3,7 +3,7 @@ import { putUser, getUserByUUID, getUserByPublicKey, getNineum } from './src/rou
 import { resolve } from './src/routes/magic.js';
 import { grant } from './src/routes/grant.js';
 import { transfer } from './src/routes/transfer.js';
-import { getPlaidToken, putStripeAccount, putStripeCard } from './src/routes/money.js';
+import { getPlaidToken, getStripePaymentIntent, putStripeAccount, putStripeIssueCard, putStripeCustomer } from './src/routes/money.js';
 import nineum from './src/nineum/nineum.js';
 import experience from './src/experience/experience.js';
 import sessionless from 'sessionless-node';
@@ -38,9 +38,11 @@ app.post('/user/:uuid/transfer', transfer);
 
 app.post('/user/:uuid/grant', grant);
 
-app.put('resolve/plaid', async (req, res) => getPlaidToken);
-app.put('resolve/stripe/account', async (req, res) => putStripeAccount);
-app.put('/resolve/card', putStripeCard);
+app.get('/resolve/plaid', getPlaidToken);
+app.get('/resolve/intent/user/:uuid', getStripePaymentIntent);
+app.put('/resolve/stripe/account', putStripeAccount);
+app.put('/resolve/card', putStripeIssueCard);
+app.put('/resolve/customer/user/:uuid', putStripeCustomer);
 
-app.listen(3000);
+app.listen(3001);
 console.log('hit me!');

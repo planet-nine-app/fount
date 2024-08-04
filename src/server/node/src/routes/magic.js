@@ -6,9 +6,12 @@ const resolve = async (req, res) => {
 
   let resolved = true;
 
+  const gatewayUsers = [];
+
   for(let i = 0; i < payload.gateways.length; i++) {
     const gateway = payload.gateways[i];
     const gatewayUser = await user.getUser(gateway.uuid);
+    gatewayUsers.push(gatewayUser);
     const signature = gateway.signature;
 
     const message = JSON.stringify({
@@ -37,7 +40,11 @@ const resolve = async (req, res) => {
     resolved = false;
   }
 
-  resolved = await user.spendMP(caster, payload.mp);
+  if(mp) {
+    resolved = await user.spendMP(caster, payload.totalCost);
+  } else {
+    resolved = await user.spendMoney(caster, payload, gatewayUsers, payload.totalCost);
+  }
 
   if(resolved) {
     const signatureMap = {};

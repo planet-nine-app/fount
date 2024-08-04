@@ -76,7 +76,19 @@ console.log('current nineum', currentNineum);
 
   transferNineum: async (sourceUser, destinationUser, nineumToTransfer) => {
     const sourceNineum = (await db.getNineum(sourceUser)).nineum;
-    
+    const destinationNineum = (await db.getNineum(destinationUser)).nineum;
+
+    nineumToTransfer.forEach(nineum => {
+      const index = sourceNineum.indexOf(nineum);
+      if(index === -1) {
+        return;
+      }
+      destinationNineum.push(sourceNineum.splice(index, 1).pop());
+    });  
+
+    await client.set(`user:nineum:${sourceUser.uuid}`, JSON.stringify({nineum: sourceNineum}));
+    await client.set(`user:nineum:${destinationUser.uuid}`, JSON.stringify({nineum: destinationNineum}));
+    return await db.getUser(sourceUser.uuid);
   }
 };
 
