@@ -1,6 +1,10 @@
 import db from '../persistence/db.js';
 import nineum from '../nineum/nineum.js';
 import dayjs from 'dayjs';
+import stripe from 'stripe';
+import { stripeKey } from '../../config/default.js';
+ 
+const stripeSDK = stripe(stripeKey);
 
 const maxMPAndRegenerationRate = { // These magic numbers have an interesting future role. The idea
                                       // was that these would grow with the system so that as more people
@@ -93,6 +97,11 @@ const user = {
     return newUser;
   },
 
+  saveUser: async (userToSave) => {
+    await db.saveUser(userToSave);
+    return true;
+  },
+
   getNineum: async (foundUser) => {
     return await db.getNineum(foundUser);
   },
@@ -126,7 +135,6 @@ console.log(caster.mp);
   },
 
   spendMoney: async (caster, payload, totalCost) => {
-   // const stripe = require('stripe')('stripe-token');
 
     const totalMinimum = payload.gateways.reduce((acc, cur) => acc + cur.minimumCost, 0);
     const totalDiff = totalCost - totalMinimum;
@@ -135,16 +143,16 @@ console.log(caster.mp);
     }
     const additional = Math.floor(totalDiff / (payload.gateways.length + 1));
 
-    const charge = await stripe.charges.create({
+    const charge = await stripeSDK.charges.create({
       amount: totalCost, // Amount in cents
       currency: 'usd',
-      source: 'tok_visa', // payment source for user
+      source: 'tok_bypassPending', // payment source for user
       transfer_group: 'GROUP_1',
       description: 'Charge for order 123'
     });   
 
     const transferPromises = gatewayUsers.map((gatewayUser, index) => {
-      return stripe.transfers.create({
+      return stripeSDK.transfers.create({
         amount: payload.gateways[index].minimumCost + additional,
         currency: 'usd',
         destination: gatewayUser.stripeAccountId, // ID of the first connected account
@@ -152,7 +160,7 @@ console.log(caster.mp);
       });
     });
 
-    transferPromises.push(stripe.transfers.create({
+    transferPromises.push(stripeSDK.transfers.create({
       amount: additional,
       currency: 'usd',
       destination: '<planet nine account>',

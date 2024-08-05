@@ -15,6 +15,7 @@
     "dayjs": "^1.11.12",
     "express": "^4.19.2",
     "redis": "^4.7.0",
-    "sessionless-node": "^0.10.1"
+    "sessionless-node": "^0.10.1",
+    "stripe": "^16.6.0"
   }
 }

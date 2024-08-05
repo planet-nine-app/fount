@@ -1,5 +1,17 @@
 import user from '../user/user.js';
 import sessionless from 'sessionless-node';
+import { stripeKey, stripePublishingKey } from '../../config/default.js';
+import stripe from 'stripe';
+
+const stripeSDK = stripe(stripeKey);
+
+/*const charge = await stripeSDK.charges.create({
+      amount: 50000, // Amount in cents
+      currency: 'usd',
+      source: 'tok_bypassPending', // payment source for user
+      description: 'add balance to test acct'
+    });
+console.log(charge);*/
 
 const getPlaidToken = async (req, res) => {
   try {
@@ -54,44 +66,63 @@ console.log('trying to get payment intent');
     }
 console.log('past auth');
 
-    const customerId = foundUser.stripeAccountId || (await stripe.customers.create()).id;
+//    const customerId = foundUser.stripeAccountId || (await stripeSDK.customers.create()).id;
+    const customerId = (await stripeSDK.customers.create()).id;
+console.log('got customer id: ', customerId);
     if(foundUser.stripeAccountId !== customerId) {
       foundUser.stripeAccountId = customerId;
       await user.saveUser(foundUser);
     }
 console.log('got customerId');
 
-    const ephemeralKey = await stripe.ephemeralKeys.create(
-      {customer: customer.id},
+    const ephemeralKey = await stripeSDK.ephemeralKeys.create(
+      {customer: customerId},
       {apiVersion: '2024-06-20'}
     );
 console.log('got ephemeral key');
 
-    const paymentIntent = await stripe.paymentIntents.create({
+    const groupName = 'group_' + foundUser.uuid;
+
+    const paymentIntent = await stripeSDK.paymentIntents.create({
       amount: amount,
       currency: currency,
-      customer: customer.id,
+      customer: customerId,
       // In the latest version of the API, specifying the `automatic_payment_methods` parameter
       // is optional because Stripe enables its functionality by default.
       automatic_payment_methods: {
 	enabled: true,
       },
+      transfer_group: groupName
     });
 console.log('got payment intent');
 
-    res.send({
+    const accounts = ['acct_1PkHxKINZ8AVbJk4', 'acct_1PkKCbIhMl7JdVnG', 'acct_1PkKClIpOfaGPdk4', 'acct_1PkKCrIiyvAW1nsA', 'acct_1PkKCyRIJN1ETtWv', 'acct_1PkKD4Iqfebwhmgc'];
+    const transferPromises = accounts.map(account => {
+      return stripeSDK.transfers.create({
+	amount: 200,
+	currency: 'usd',
+	destination: account,
+	transfer_group: groupName
+      });
+    });
+    await Promise.all(transferPromises);
+console.log('transferPromises');
+console.log('sending');
+    const response = {
       paymentIntent: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
-      customer: customer.id,
-      publishableKey: '<publishableKey>'
-    });
+      customer: customerId,
+      publishableKey: stripePublishingKey
+    };
+    res.send(response);
   } catch(err) {
+console.log(err);
     res.status = 404;
     res.send({error: err});
   }
 };
 
-const putStripeAccount = async (req, res) => {
+/*const putStripeAccount = async (req, res) => {
   try {
     const body = req.body;
     const uuid = body.uuid;
@@ -126,7 +157,7 @@ const putStripeAccount = async (req, res) => {
     res.status = 404;
     res.send({error: err});
   }
-};
+};*/
 
 const putStripeIssueCard =  async (req, res) => {
   try {
@@ -185,17 +216,103 @@ const putStripeCustomer = async (req, res) => {
       res.status = 403;
       res.send({error: 'auth error'});
     }
+console.log('past auth');
 
-    const customer = await stripe.customers.create({
+    const customer = await stripeSDK.customers.create({
       name,
       email,
     });
+console.log('got customer', customer);
 
     foundUser.stripeAccountId = customer.id;
     await user.saveUser(foundUser);
 
     res.send(foundUser);
   } catch(err) {
+console.log(err);
+    res.status = 404;
+    res.send({error: err});
+  }
+};
+
+const putStripeAccount = async (req, res) => {
+  try {
+    // Set your secret key. Remember to switch to your live secret key in production.
+    // See your keys here: https://dashboard.stripe.com/apikeys
+    // const stripe = require('stripe')('stripe-key');
+
+    const body = req.body;
+    const uuid = req.params.uuid;
+    const timestamp = body.timestamp;
+    const name = body.name;
+    const email = body.email;
+    const signature = body.signature;
+
+    const message = timestamp + uuid + name + email;
+
+    const foundUser = await user.getUser(uuid);
+
+    if(!sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status = 403;
+      res.send({error: 'auth error'});
+    }
+console.log('past auth');
+
+    const account = await stripeSDK.accounts.create({
+      country: 'US',
+      email: email,
+      business_type: 'individual',
+      tos_acceptance: {
+        date: Math.floor((new Date().getTime()) / 1000),
+        ip: '97.120.94.145',
+        service_agreement: 'full'
+      },
+      capabilities: {
+        transfers: {
+          requested: true
+        }
+      },
+      controller: {
+	fees: {
+	  payer: 'application',
+	},
+	losses: {
+	  payments: 'application',
+	},
+        requirement_collection: 'application',
+	stripe_dashboard: {
+	  type: 'none',
+	},
+
+      },
+    });
+console.log('got account', account);
+
+    const retrievedAccount = await stripeSDK.accounts.retrieve(account.id);
+console.log(retrievedAccount.capabilities);
+console.log(retrievedAccount.requirements);
+
+    await stripeSDK.accounts.update(account.id, {
+      individual: {
+	first_name: body.firstName,
+	last_name: body.lastName,
+	dob: body.dob,
+	ssn_last_4: body.ssn_last_4,
+	address: body.address
+      },
+      business_profile: body.business_profile,
+      external_account: body.external_account
+    });
+
+    foundUser.stripeAccountId = account.id;
+    await user.saveUser(foundUser);
+
+//    const loginURL = await stripeSDK.accounts.createLoginLink(account.id);
+//console.log(loginURL);
+
+    res.send(foundUser);
+  } catch(err) {
+console.log(err);
     res.status = 404;
     res.send({error: err});
   }
@@ -204,7 +321,7 @@ const putStripeCustomer = async (req, res) => {
 export {
   getPlaidToken,
   getStripePaymentIntent,
-  putStripeAccount,
   putStripeIssueCard,
-  putStripeCustomer
+  putStripeCustomer,
+  putStripeAccount
 };
