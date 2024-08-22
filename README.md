@@ -1,25 +1,25 @@
-# Planet Nine
+# Fount
 
-*Planet Nine* (named for a [hypothetical planet] that may exist out past Neptune) is the top layer of The Stack that starts with [Sessionless][sessionless].
+*Fount* (a name meaning the source of something) is the top layer of The Stack that starts with [Sessionless][sessionless].
 It handles the resolution of MAGIC spells, and disburses digital items amongst participants.
-It's probably closest in spirit to a cooperative bank (in the US these are called credit unions) where the owners are any and all participants of anything that uses Planet Nine.
+It's probably closest in spirit to a cooperative bank (in the US these are called credit unions) where the owners are any and all participants of anything that uses Fount.
 
 ## Overview
 
-The Planet Nine server is essentially a publically available payment processor with two additional features.
+The Fount server is essentially a publically available payment processor with two additional features.
 First it can handle "payments" of things that aren't money.
-Seccond it can attach meaningful things to the transactions--think of a receipt that is useful or collectible in some way.
+Second it can attach meaningful things to the transactions--think of a receipt that is useful or collectible in some way.
 
-In The Stack ecosystem, Planet Nine is a [Resolver][resolver].
+In The Stack ecosystem, Fount is a [Resolver][resolver].
 It can be used for monied transactions[^1], but for right now I'll focus on non-monied transactions here.
 
-Because Planet Nine generates useful things when spells resolve, some gating mechanism is necessary to prevent people from just spamming requests.
+Because Fount generates useful things when spells resolve, some gating mechanism is necessary to prevent people from just spamming requests.
 This gate is a stored value system called mp.
 MP is granted to each user, and is expended with non-monied spells, and then recharges over time.
 If you've played Skyrim, it works just like the Magika bar.
 
 So what are those useful things? 
-With every spell, Planet Nine is able to disburse money, (experience) points, or tokens[^2] called [Nineum][nineum].
+With every spell, Fount is able to disburse money, (experience) points, or tokens[^2] called [Nineum][nineum].
 Again I'll leave money for now.
 
 The points are attached to the uuid being used in the spell, and persist throughout any digital context where that uuid is used.
@@ -42,7 +42,7 @@ flowchart LR
     A -->|Modifies State| A
 ```
 
-In the case of [Open Source Force][osf]'s bounty bot, the caster would be the person posting the bounty, the target would be the bot, and the resolver is Planet Nine.
+In the case of [Open Source Force][osf]'s bounty bot, the caster would be the person posting the bounty, the target would be the bot, and the resolver is Fount.
 So:
 
 ```mermaid
@@ -55,7 +55,7 @@ flowchart LR
     A -->|Modifies State| A
 ```
 
-When the spell resolves, the bot will be assigned Nineum by Planet Nine, which it can then transfer to whomever it is that completes the bounty.
+When the spell resolves, the bot will be assigned Nineum by Fount, which it can then transfer to whomever it is that completes the bounty.
 It can also grant points at that time, and eventually, should someone supply it, money.
 
 The bot, being the holder of the rewards for the bounty, can be used to aggregate rewards too.
@@ -171,7 +171,7 @@ The cool APIs are `resolve`, `transfer`, and `grant` at the bottom.
 </details>
 
 <details>
-  <summary><code>POST</code> <code><b>/user/:uuid/transfer</b></code> <code>Transfers Nineum to another Planet Nine uuid</code></summary>
+  <summary><code>POST</code> <code><b>/user/:uuid/transfer</b></code> <code>Transfers Nineum to another Fount uuid</code></summary>
 
 ##### Parameters
 
@@ -202,7 +202,7 @@ The cool APIs are `resolve`, `transfer`, and `grant` at the bottom.
 </details>
 
 <details>
-  <summary><code>POST</code> <code><b>/user/:uuid/grant</b></code> <code>Grants point to a Planet Nine user</code></summary>
+  <summary><code>POST</code> <code><b>/user/:uuid/grant</b></code> <code>Grants point to a Fount user</code></summary>
 
 ##### Parameters
 

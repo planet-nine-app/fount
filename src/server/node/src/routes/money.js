@@ -66,8 +66,8 @@ console.log('trying to get payment intent');
     }
 console.log('past auth');
 
-//    const customerId = foundUser.stripeAccountId || (await stripeSDK.customers.create()).id;
-    const customerId = (await stripeSDK.customers.create()).id;
+    const customerId = foundUser.stripeAccountId || (await stripeSDK.customers.create()).id;
+//    const customerId = (await stripeSDK.customers.create()).id;
 console.log('got customer id: ', customerId);
     if(foundUser.stripeAccountId !== customerId) {
       foundUser.stripeAccountId = customerId;
