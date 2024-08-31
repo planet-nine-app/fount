@@ -40,10 +40,10 @@ const resolve = async (req, res) => {
     resolved = false;
   }
 
-  if(mp) {
+  if(payload.mp) {
     resolved = await user.spendMP(caster, payload.totalCost);
   } else {
-    resolved = await user.spendMoney(caster, payload, gatewayUsers, payload.totalCost);
+    // resolved = await user.spendMoney(caster, payload, gatewayUsers, payload.totalCost);
   }
 
   if(resolved) {

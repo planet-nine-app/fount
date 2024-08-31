@@ -15,7 +15,9 @@ console.log(pubKey);
     return res.send({error: 'auth error'});
   }
 
-  const foundUser = await user.putUser(req.body.user, pubKey);
+  const newUser = req.body.user || { pubKey };
+
+  const foundUser = await user.putUser(newUser, pubKey);
 
 console.log('sending back', foundUser);
 
@@ -47,6 +49,7 @@ const getUserByPublicKey = async (req, res) => {
   const message = timestamp + pubKey;
 
   const foundUser = await user.getUserByPublicKey(pubKey);
+console.log(signature);
 
   if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
     res.status(403);
@@ -76,9 +79,30 @@ const getNineum = async (req, res) => {
   res.send(nineum);
 };
 
+const deleteUser = async (req, res) => {
+  const body = req.body;
+  const timestamp = body.timestamp;
+  const signature = body.signature;
+  const uuid = body.uuid;
+  const message = timestamp + uuid;
+
+  const foundUser = await user.getUser(uuid);
+
+  if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+    res.status(403);
+    return res.send({error: 'auth error'});
+  }
+
+console.log('found user uuid', foundUser.uuid);
+  const deleted = await user.deleteUser(foundUser.uuid);
+
+  res.send();
+};
+
 export {
   putUser,
   getUserByUUID,
   getNineum,
   getUserByPublicKey,
+  deleteUser
 };

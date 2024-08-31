@@ -1,11 +1,7 @@
 import db from '../persistence/db.js';
 import nineum from '../nineum/nineum.js';
 import dayjs from 'dayjs';
-import stripe from 'stripe';
-import { stripeKey } from '../../config/default.js';
  
-const stripeSDK = stripe(stripeKey);
-
 const maxMPAndRegenerationRate = { // These magic numbers have an interesting future role. The idea
                                       // was that these would grow with the system so that as more people
                                       // use it, everyone will be able to do more stuff. Not sure how
@@ -107,6 +103,7 @@ const user = {
   },
 
   deleteUser: async (userToDelete) => {
+console.log('user/user', userToDelete);
     return (await db.deleteUser(userToDelete));
   },
 
@@ -134,6 +131,10 @@ console.log(caster.mp);
     return success;
   },
 
+ /**
+  * This function is being split between fount and addie, and will be commented out here until that's done.
+  */
+/*
   spendMoney: async (caster, payload, totalCost) => {
 
     const totalMinimum = payload.gateways.reduce((acc, cur) => acc + cur.minimumCost, 0);
@@ -163,12 +164,12 @@ console.log(caster.mp);
     transferPromises.push(stripeSDK.transfers.create({
       amount: additional,
       currency: 'usd',
-      destination: '<planet nine account>',
+      destination: '<account>',
       transfer_group: 'GROUP_1'
     }));
 
     const transfers = await Promise.all(transferPromises);
-  }
+  }*/
 };
 
 export default user;

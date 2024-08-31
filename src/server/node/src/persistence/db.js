@@ -1,4 +1,4 @@
-import { createClient } from 'redis';
+import { createClient } from './client.js';
 import sessionless from 'sessionless-node';
 
 const client = await createClient()
@@ -7,13 +7,16 @@ const client = await createClient()
 
 const db = {
   getUser: async (uuid) => {
+console.log('should get user by uuid');
     const user = await client.get(`user:${uuid}`);
     const parsedUser = JSON.parse(user);
     return parsedUser;
   },
 
   getUserByPublicKey: async (pubKey) => {
+console.log('should get user by public key');
     const uuid = await client.get(`pubKey:${pubKey}`);
+console.log('uuid', uuid);
     return await db.getUser(uuid);
   },
 
@@ -33,8 +36,9 @@ const db = {
     return true;
   },
 
-  deleteUser: async (user) => {
-    await client.sendCommand(['DEL', `user:${user.uuid}`]);
+  deleteUser: async (uuid) => {
+console.log('should delete: ', `user:${uuid}`);
+    await client.del(`user:${uuid}`);
 
     return true;
   },

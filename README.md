@@ -6,7 +6,7 @@ It's probably closest in spirit to a cooperative bank (in the US these are calle
 
 ## Overview
 
-The Fount server is essentially a publically available payment processor with two additional features.
+The Fount server is essentially a publically available resolver, which, along with [Addie][addie] can be used as a payment processor with two additional features.
 First it can handle "payments" of things that aren't money.
 Second it can attach meaningful things to the transactions--think of a receipt that is useful or collectible in some way.
 
@@ -236,6 +236,7 @@ The cool APIs are `resolve`, `transfer`, and `grant` at the bottom.
 [resolver]: https://github.com/planet-nine-app/MAGIC/blob/main/README-DEV.md#resolvers
 [nineum]: https://github.com/planet-nine-app/planet-nine/blob/main/Nineum.md
 [osf]: https://opensourceforce.net
+[addie]: https://www.github.com/planet-nine-app/addie
 
 [^1]: "I am actively working on this for Julia, and the MAGIC demo."
 [^2]: "Technically Nineum is a non-fungible token (well more accurately a half-fungible token[^3]), but the crypto bros ruined that concept so thoroughly that I've had to scrub all reference to the idea from everything I write.
