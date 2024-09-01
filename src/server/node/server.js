@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { putUser, getUserByUUID, getUserByPublicKey, getNineum, deleteUser } from './src/routes/user.js';
 import { resolve } from './src/routes/magic.js';
 import { grant } from './src/routes/grant.js';
@@ -10,6 +11,7 @@ import sessionless from 'sessionless-node';
 const allowedTimeDifference = 300000; // keep this relaxed for now
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
