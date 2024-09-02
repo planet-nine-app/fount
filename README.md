@@ -231,6 +231,22 @@ The cool APIs are `resolve`, `transfer`, and `grant` at the bottom.
 
 </details>
 
+### Client SDK
+
+`createUser(saveKeys, getKeys)` - Creates a new fount user
+
+`getUserByUUID(uuid)` - gets a fount user by uuid
+
+`getUserByPublicKey(pubKey)` - get a fount user by public key
+
+`resolve(spell)` - resolves a spell (see [MAGIC][magic])
+
+`grant(uuid, destinationUUID, amount, description)` - grants some points to a destination
+
+`getNineum(uuid)` - gets a user's nineum
+
+`transferNineum(uuid, destinationUUID, nineumUniqueIds, price, currenct)` - transfers nineum from one user to another
+
 [hypothetical planet]: https://en.wikipedia.org/wiki/Planet_Nine
 [sessionless]: https://www.github.com/planet-nine-app/sessionless
 [resolver]: https://github.com/planet-nine-app/MAGIC/blob/main/README-DEV.md#resolvers
