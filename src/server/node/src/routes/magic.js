@@ -14,12 +14,7 @@ const resolve = async (req, res) => {
     gatewayUsers.push(gatewayUser);
     const signature = gateway.signature;
 
-    const message = JSON.stringify({
-      timestamp: gateway.timestamp,
-      uuid: gateway.uuid,
-      minimumCost: gateway.minimumCost,
-      ordinal: gateway.ordinal
-    });
+    const message = gateway.timestamp + uuid + minimumCost + ordinal;
 
     if(!signature || !sessionless.verifySignature(signature, message, gatewayUser.pubKey)) {
       resolved = false;

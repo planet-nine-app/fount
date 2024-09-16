@@ -139,7 +139,7 @@ const nineum = {
 
   constructNineum: async () => {
     const universe = '01';
-    const address = '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
+    const address = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
     let flavor = '';
     let ordinal = '';
 
