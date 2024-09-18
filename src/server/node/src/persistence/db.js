@@ -93,7 +93,17 @@ console.log('current nineum', currentNineum);
     await client.set(`user:nineum:${sourceUser.uuid}`, JSON.stringify({nineum: sourceNineum}));
     await client.set(`user:nineum:${destinationUser.uuid}`, JSON.stringify({nineum: destinationNineum}));
     return await db.getUser(sourceUser.uuid);
+  },
+
+  saveKeys: async (keys) => {
+    await client.set(`keys`, JSON.stringify(keys));
+  },
+
+  getKeys: async () => {
+    const keyString = await client.get('keys');
+    return JSON.parse(keyString);
   }
+
 };
 
 export default db;
