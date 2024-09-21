@@ -86,6 +86,7 @@ const user = {
     newUser.experiencePool = 0;
 
     newUser.nineumCount = 0;
+    newUser.ordinal = 0;
     const uuid = await db.putUser(newUser, pubKey);
 
     newUser.uuid = uuid;
@@ -94,6 +95,7 @@ const user = {
   },
 
   saveUser: async (userToSave) => {
+    userToSave.ordinal += 1;
     await db.saveUser(userToSave);
     return true;
   },
