@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 });
 
 const SUBDOMAIN = process.env.SUBDOMAIN || 'dev';
-bdo.baseURL = `${SUBDOMAIN}.bdo.allyabase.com`;
+bdo.baseURL = process.env.LOCALHOST ? 'http://localhost:3003/' : `${SUBDOMAIN}.bdo.allyabase.com/`;
 
 const bdoHashInput = `${SUBDOMAIN}fount`;
 
@@ -46,13 +46,14 @@ const repeat = (func) => {
 const bootstrap = async () => {
   try {
     const bdoUUID = await bdo.createUser(bdoHash, spellbook, db.saveKeys, db.getKeys);
+    const spellbooks = await bdo.putSpellbook(bdoUUID, bdoHash, spellbook);
     const fount = {
       uuid: 'fount',
       bdoUUID,
       spellbook
     };
 
-    if(!fount.bdoUUID) {
+    if(!fount.bdoUUID || spellbooks.length < 1) {
       throw new Error('bootstrap failed');
     }
 
@@ -62,6 +63,7 @@ const bootstrap = async () => {
   }
 };
 
+repeat(bootstrap);
 
 app.put('/user/create', putUser);
 app.get('/user/:uuid', getUserByUUID);

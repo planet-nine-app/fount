@@ -46,7 +46,7 @@ const fount = {
     const user = await res.json();
     const uuid = user.uuid;
 
-    return uuid;
+    return user;
   },
 
   getUserByUUID: async (uuid) => {
