@@ -71,7 +71,7 @@ app.get('/user/pubKey/:pubKey', getUserByPublicKey);
 app.get('/user/:uuid/nineum', getNineum);
 app.delete('/user/:uuid', deleteUser);
 
-app.post('/resolve', resolve);
+app.post('/resolve/:spellName', resolve);
 
 app.post('/user/:uuid/transfer', transfer);
 
