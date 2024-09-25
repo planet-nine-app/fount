@@ -46,6 +46,7 @@ const repeat = (func) => {
 const bootstrap = async () => {
   try {
     const bdoUUID = await bdo.createUser(bdoHash, spellbook, db.saveKeys, db.getKeys);
+console.log(bdoUUID);
     const spellbooks = await bdo.putSpellbook(bdoUUID, bdoHash, spellbook);
     const fount = {
       uuid: 'fount',

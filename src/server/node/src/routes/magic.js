@@ -39,13 +39,14 @@ console.log('About to try and get caster: ', payload.casterUUID);
     }
 
     if(resolved) {
+console.log('resolved', resolved);
       const signatureMap = {};
       return res.send({
 	success: true,
 	signatureMap
       });
     }
-    res.status(403);
+    res.status(900);
     res.send({success: false});
   } catch(err) {
 console.warn(err);

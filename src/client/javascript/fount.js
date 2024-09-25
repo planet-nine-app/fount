@@ -45,7 +45,6 @@ const fount = {
 
     const res = await put(`${fount.baseURL}user/create`, payload);
     const user = await res.json();
-    const uuid = user.uuid;
 
     return user;
   },
