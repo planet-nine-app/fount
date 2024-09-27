@@ -159,8 +159,55 @@ const nineum = {
     ordinal = flavorCount + 1;
 
     return universe + address + flavor + year + ordinal;
-  }
+  },
 
+  constructAdministrativeNineum: async () => {
+    const universe = '01';
+    const address = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
+    let flavor = '';
+    let ordinal = '';
+  
+    const charge = getOneFromSet(chargeSet);
+    const direction = getOneFromSet(directionSet);
+    const rarity = 'ff';
+    const size = getOneFromSet(sizeSet);
+    const texture = getOneFromSet(textureSet);
+    const shape = getOneFromSet(shapeSet);
+  
+    flavor = charge + direction + rarity + size + texture + shape;
+  
+    let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
+    const year = zeroPad('' + yearDiff, 2);
+
+    const flavorCount = await db.countForFlavorOfNineum(flavor);
+    ordinal = flavorCount + 1;
+
+    return universe + address + flavor + year + ordinal;
+  },
+
+  constructSpecificFlavorNineum: async (_charge, _direction, _rarity, _size, _texture, _shape) => {
+    const universe = '01';
+    const address = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
+    let flavor = '';
+    let ordinal = '';
+  
+    const charge = _charge || getOneFromSet(chargeSet);
+    const direction = _diretion || getOneFromSet(directionSet);
+    const rarity = _rarity || getRarity();
+    const size = _size || getOneFromSet(sizeSet);
+    const texture = _texture || getOneFromSet(textureSet);
+    const shape = _shape || getOneFromSet(shapeSet);
+  
+    flavor = charge + direction + rarity + size + texture + shape;
+  
+    let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
+    const year = zeroPad('' + yearDiff, 2);
+
+    const flavorCount = await db.countForFlavorOfNineum(flavor);
+    ordinal = flavorCount + 1;
+
+    return universe + address + flavor + year + ordinal;
+  }
 };
 
 export default nineum;

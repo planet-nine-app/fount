@@ -61,10 +61,12 @@ const calculateExperience = (user) => {
 
 const user = {
   getUser: async (uuid) => {
+console.log('getting user', uuid);
     let foundUser = await db.getUser(uuid);
     foundUser = calculateMP(foundUser);
     foundUser = calculateExperience(foundUser);
     await db.saveUser(foundUser);
+console.log('foundUser', foundUser);
     return foundUser;
   },
 
@@ -127,6 +129,7 @@ console.log(caster.mp);
 console.log(amount);
       caster.mp -= amount;
 console.log(caster.mp);
+      caster.nineumCount += newNineum.length;
       await db.saveUser(caster);
     }
 

@@ -1,7 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import { createHash } from 'node:crypto';
-import { putUser, getUserByUUID, getUserByPublicKey, getNineum, deleteUser } from './src/routes/user.js';
+import { 
+  putUser, 
+  getUserByUUID, 
+  getUserByPublicKey, 
+  getNineum, 
+  grantNineum, 
+  deleteUser 
+} from './src/routes/user.js';
 import { resolve } from './src/routes/magic.js';
 import { grant } from './src/routes/grant.js';
 import { transfer } from './src/routes/transfer.js';
@@ -70,6 +77,7 @@ app.put('/user/create', putUser);
 app.get('/user/:uuid', getUserByUUID);
 app.get('/user/pubKey/:pubKey', getUserByPublicKey);
 app.get('/user/:uuid/nineum', getNineum);
+app.put('/user/:uuid/nineum', grantNineum);
 app.delete('/user/:uuid', deleteUser);
 
 app.post('/resolve/:spellName', resolve);

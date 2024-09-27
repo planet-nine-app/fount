@@ -11,16 +11,18 @@ console.log('should resolve');
 
     const gatewayUsers = [];
 
-    for(let i = 0; i < payload.gateways.length; i++) {
-      const gateway = payload.gateways[i];
-      const gatewayUser = await user.getUser(gateway.uuid);
-      gatewayUsers.push(gatewayUser);
-      const signature = gateway.signature;
+    if(payload.gateways && payload.gateways.length > 0) {
+      for(let i = 0; i < payload.gateways.length; i++) {
+	const gateway = payload.gateways[i];
+	const gatewayUser = await user.getUser(gateway.uuid);
+	gatewayUsers.push(gatewayUser);
+	const signature = gateway.signature;
 
-      const message = gateway.timestamp + gateway.uuid + gateway.minimumCost + gateway.ordinal;
+	const message = gateway.timestamp + gateway.uuid + gateway.minimumCost + gateway.ordinal;
 
-      if(!signature || !sessionless.verifySignature(signature, message, gatewayUser.pubKey)) {
-	resolved = false;
+	if(!signature || !sessionless.verifySignature(signature, message, gatewayUser.pubKey)) {
+	  resolved = false;
+	}
       }
     }
 

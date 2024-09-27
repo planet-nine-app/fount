@@ -79,6 +79,12 @@ const getNineum = async (req, res) => {
   res.send(nineum);
 };
 
+const grantNineum = async (req, res) => {
+  const uuid = req.params.uuid;
+  const body = req.body;
+  const timestamp = body.timestamp;
+};
+
 const deleteUser = async (req, res) => {
   const body = req.body;
   const timestamp = body.timestamp;
@@ -103,6 +109,7 @@ export {
   putUser,
   getUserByUUID,
   getNineum,
+  grantNineum,
   getUserByPublicKey,
   deleteUser
 };
