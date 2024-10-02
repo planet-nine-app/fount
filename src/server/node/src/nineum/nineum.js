@@ -139,7 +139,7 @@ const nineum = {
 
   constructNineum: async () => {
     const universe = '01';
-    const address = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
+    const galaxy = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's galaxy as unknowingly chosed by Wick3d in #chat
     let flavor = '';
     let ordinal = '';
 
@@ -156,14 +156,13 @@ const nineum = {
     const year = zeroPad('' + yearDiff, 2);
 
     const flavorCount = await db.countForFlavorOfNineum(flavor);
-    ordinal = flavorCount + 1;
+    ordinal = zeroPad((flavorCount + 1) + '', 8);
 
-    return universe + address + flavor + year + ordinal;
+    return universe + galaxy + flavor + year + ordinal;
   },
 
-  constructAdministrativeNineum: async () => {
+  constructGalacticNineum: async (galaxy) => {
     const universe = '01';
-    const address = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
     let flavor = '';
     let ordinal = '';
   
@@ -180,14 +179,37 @@ const nineum = {
     const year = zeroPad('' + yearDiff, 2);
 
     const flavorCount = await db.countForFlavorOfNineum(flavor);
-    ordinal = flavorCount + 1;
+    ordinal = zeroPad((flavorCount + 1) + '', 8);
 
-    return universe + address + flavor + year + ordinal;
+    return universe + galaxy + flavor + year + ordinal;
+  },
+
+  constructAdministrativeNineum: async (galaxy) => {
+    const universe = '01';
+    let flavor = '';
+    let ordinal = '';
+  
+    const charge = getOneFromSet(chargeSet);
+    const direction = getOneFromSet(directionSet);
+    const rarity = 'fe';
+    const size = getOneFromSet(sizeSet);
+    const texture = getOneFromSet(textureSet);
+    const shape = getOneFromSet(shapeSet);
+  
+    flavor = charge + direction + rarity + size + texture + shape;
+  
+    let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
+    const year = zeroPad('' + yearDiff, 2);
+
+    const flavorCount = await db.countForFlavorOfNineum(flavor);
+    ordinal = zeroPad((flavorCount + 1) + '', 8);
+
+    return universe + galaxy + flavor + year + ordinal;
   },
 
   constructSpecificFlavorNineum: async (_charge, _direction, _rarity, _size, _texture, _shape) => {
     const universe = '01';
-    const address = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's address as unknowingly chosed by Wick3d in #chat
+    const galaxy = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's galaxy as unknowingly chosed by Wick3d in #chat
     let flavor = '';
     let ordinal = '';
   
@@ -204,9 +226,9 @@ const nineum = {
     const year = zeroPad('' + yearDiff, 2);
 
     const flavorCount = await db.countForFlavorOfNineum(flavor);
-    ordinal = flavorCount + 1;
+    ordinal = zeroPad((flavorCount + 1) + '', 8);
 
-    return universe + address + flavor + year + ordinal;
+    return universe + galaxy + flavor + year + ordinal;
   }
 };
 

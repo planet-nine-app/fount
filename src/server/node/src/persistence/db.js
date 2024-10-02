@@ -57,9 +57,16 @@ console.log('current nineum', currentNineum);
     const allNineum = [...currentNineum, ...newNineum];
     await client.set(`user:nineum:${user.uuid}`, JSON.stringify({nineum: newNineum}));
 
+    const galaxyMapJSON = (await client.get('galaxyMap')) || '{}';
+    const galaxyMap = JSON.parse(galaxyMapJSON);
+
     const flavorMapJSON = (await client.get('flavorMap')) || '{}';
     const flavorMap = JSON.parse(flavorMapJSON);
     newNineum.forEach(nineum => {
+      const galaxy = nineum.slice(2, 10);
+      if(!galaxyMap[galaxy]) {
+        galaxyMap[galaxy] = 1;
+      }
       const flavor = nineum.slice(10, 24);
       if(!flavorMap[flavor]) {
         flavorMap[flavor] = 1;
@@ -70,6 +77,14 @@ console.log('current nineum', currentNineum);
     await client.set('flavorMap', JSON.stringify(flavorMap));
 
     return true;
+  },
+
+  isGalaxyOpen: async (galaxy) => {
+    const galaxyMapJSON = (await client.get('galaxyMap')) || '{}';
+    const galaxyMap = JSON.parse(galaxyMapJSON);
+console.log(galaxyMap);
+console.log(galaxyMap[galaxy]);
+    return galaxyMap[galaxy];
   },
  
   countForFlavorOfNineum: async (flavor) => {

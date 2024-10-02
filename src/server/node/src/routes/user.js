@@ -1,4 +1,6 @@
 import user from '../user/user.js';
+import db from '../persistence/db.js';
+import nineum from '../nineum/nineum.js';
 import sessionless from 'sessionless-node';
 
 const putUser =  async (req, res) => {
@@ -11,6 +13,7 @@ console.log(req.body.timestamp);
 console.log(signature);
 console.log(message);
 console.log(pubKey);
+console.log('auth error');
     res.status(403);
     return res.send({error: 'auth error'});
   }
@@ -83,6 +86,86 @@ const grantNineum = async (req, res) => {
   const uuid = req.params.uuid;
   const body = req.body;
   const timestamp = body.timestamp;
+  const charge = body.charge;
+  const direction = body.direction;
+  const rarity = body.rarity;
+  const size = body.size;
+  const texture = body.texture;
+  const shape = body.shape;
+};
+
+const grantAdminNineum = async (req, res) => {
+  try {
+    const uuid = req.params.uuid;
+    const body = req.body;
+    const timestamp = body.timestamp;
+    const toUserUUID = body.toUserUUID;
+    const signature = body.signature;
+    const message = timestamp + uuid;
+
+    const foundUser = await user.getUser(uuid);
+
+    if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status(403);
+      return res.send({error: 'auth error'});
+    }
+
+    const toUser = await user.getUser(toUserUUID);
+    if(!toUser) {
+      throw new Error('no to user found');
+    }
+
+    const foundUserNineum = (await db.getNineum(foundUser)).nineum;
+
+    const galacticNineum = foundUserNineum.filter(nineum => nineum.slice(14, 16) === 'ff');
+    if(galacticNineum.length > 0) {
+      const galaxy = galacticNineum[0].slice(2, 10);
+      const adminNineum = await nineum.constructAdministrativeNineum(galaxy);
+      await db.saveNineum(toUser, [adminNineum]);
+      const updatedToUser = await user.getUser(toUserUUID);
+      return res.send(updatedToUser);
+    }
+
+    res.status(403);
+    res.send({error: 'no galaxy'});
+  } catch(err) {
+console.warn(err);
+    res.status(404);
+    res.send({error: 'not found'});
+  }
+};
+
+const grantGalacticNineum = async (req, res) => {
+  try {
+    const uuid = req.params.uuid;
+    const body = req.body;
+    const timestamp = body.timestamp;
+    const galaxy = body.galaxy;
+    const signature = body.signature;
+    const message = timestamp + uuid;
+
+    const foundUser = await user.getUser(uuid);
+
+    if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status(403);
+      return res.send({error: 'auth error'});
+    }
+
+    const isGalaxyOpen = !(await db.isGalaxyOpen(galaxy));
+    if(isGalaxyOpen) {
+      const galacticNineum = await nineum.constructGalacticNineum(galaxy);
+      await db.saveNineum(foundUser, [galacticNineum]);
+      const updatedUser = await db.getUser(foundUser.uuid);
+      return res.send(updatedUser);
+    }
+
+    res.status(403);
+    res.send({error: 'galaxy in use'});
+  } catch(err) {
+console.warn('galaxy err', err);
+    res.status(404);
+    res.send({error: 'not found'});
+  }
 };
 
 const deleteUser = async (req, res) => {
@@ -110,6 +193,8 @@ export {
   getUserByUUID,
   getNineum,
   grantNineum,
+  grantGalacticNineum,
+  grantAdminNineum,
   getUserByPublicKey,
   deleteUser
 };

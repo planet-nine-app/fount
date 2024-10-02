@@ -7,6 +7,8 @@ import {
   getUserByPublicKey, 
   getNineum, 
   grantNineum, 
+  grantGalacticNineum,
+  grantAdminNineum,
   deleteUser 
 } from './src/routes/user.js';
 import { resolve } from './src/routes/magic.js';
@@ -36,6 +38,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   console.log('\n\n', req.body, '\n\n');
+  console.log(req.path);
   next();
 });
 
@@ -78,6 +81,8 @@ app.get('/user/:uuid', getUserByUUID);
 app.get('/user/pubKey/:pubKey', getUserByPublicKey);
 app.get('/user/:uuid/nineum', getNineum);
 app.put('/user/:uuid/nineum', grantNineum);
+app.put('/user/:uuid/nineum/admin', grantAdminNineum);
+app.put('/user/:uuid/nineum/galactic', grantGalacticNineum);
 app.delete('/user/:uuid', deleteUser);
 
 app.post('/resolve/:spellName', resolve);
