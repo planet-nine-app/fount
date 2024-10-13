@@ -49,14 +49,7 @@ it('should resolve a spell', async () => {
     "gateways": []
   };
 
-  const message = JSON.stringify({
-    timestamp: payload.timestamp,
-    spell: payload.spell,
-    casterUUID: payload.casterUUID,
-    totalCost: payload.totalCost,
-    mp: payload.mp,
-    ordinal: payload.ordinal,
-  });
+  const message = payload.timestamp + payload.spell + payload.casterUUID + payload.totalCost + payload.mp + payload.ordinal;
 
 console.log(keys);
   sessionless.getKeys = () => { return keys; };

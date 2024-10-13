@@ -23,21 +23,35 @@ pub struct FountUser {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
-pub struct Spell {
-    pub timestamp: String,
-    pub prompter: String,
-    pub prompt: Option<String>,
-    pub new_timestamp: Option<String>,
-    #[serde(rename = "newPubKey")]
-    pub new_pub_key: Option<String>,
-    #[serde(rename = "newUUID")]    
-    pub new_uuid: Option<String>,
-    pub new_signature: Option<String>,
+pub struct Gateway {
+    timestamp: String,
+    uuid: String,
+    minimum_cost: u32,
+    ordinal: u64,
+    signature: String,
+    #[serde(flatten)]
+    extra: HashMap<String, Value>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Spell {
+    timestamp: String,
+    spell: String,
+    #[serde(rename = "casterUUID")]
+    caster_uuid: String,
+    total_cost: u32, 
+    mp: bool,
+    ordinal: u32,
+    caster_signature: String,
+    #[serde(flatten)]
+    extra: HashMap<String, Value>,
+    gateways: Vec<Gateway>
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all="camelCase")]
+pub struct SpellResult {
     pub success: bool,
     // arbitrary json somehow?
 }
