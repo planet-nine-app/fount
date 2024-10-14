@@ -14,7 +14,7 @@ pub struct FountUser {
     pub last_mp_used: u64,
     pub experience: u64,
     #[serde(rename = "lastExperienceCalculated")]
-    pub last_experience_calculated: String,
+    pub last_experience_calculated: u64,
     pub experience_pool: u32,
     pub nineum_count: u64,
     pub ordinal: u32,
@@ -36,17 +36,33 @@ pub struct Gateway {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Spell {
-    timestamp: String,
-    spell: String,
+    pub timestamp: String,
+    pub spell: String,
     #[serde(rename = "casterUUID")]
-    caster_uuid: String,
-    total_cost: u32, 
-    mp: bool,
-    ordinal: u32,
-    caster_signature: String,
+    pub caster_uuid: String,
+    pub total_cost: u32, 
+    pub mp: bool,
+    pub ordinal: u32,
+    pub caster_signature: String,
     #[serde(flatten)]
-    extra: HashMap<String, Value>,
-    gateways: Vec<Gateway>
+    pub extra: HashMap<String, Value>,
+    pub gateways: Vec<Gateway>
+}
+
+impl Default for Spell {
+    fn default() -> Self {
+	Spell {
+	    timestamp: "now".to_string(),
+	    spell: "test".to_string(),
+	    caster_uuid: "".to_string(),
+	    total_cost: 200,
+	    mp: true,
+	    ordinal: 1,
+	    caster_signature: "".to_string(),
+	    extra: HashMap::<String, Value>::new(),
+	    gateways: Vec::<Gateway>::new()
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

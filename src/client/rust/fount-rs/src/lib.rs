@@ -10,7 +10,7 @@ use sessionless::hex::IntoHex;
 use sessionless::{Sessionless, Signature};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
-use crate::structs::{FountUser, Spell, SpellResult, SuccessResult, Transfer};
+use crate::structs::{FountUser, Gateway, Nineum, Spell, SpellResult, SuccessResult, Transfer};
 
 pub struct Fount {
     base_url: String,
@@ -108,8 +108,9 @@ impl Fount {
 
 
     pub async fn resolve(&self, spell: &Spell) -> Result<SpellResult, Box<dyn std::error::Error>> {
-        let url = format!("{}resolve", self.base_url);
-        let res = self.get(&url).await?;
+        let spell_name = spell.spell.clone();
+        let url = format!("{}resolve/{}", self.base_url, spell_name);
+        let res = self.post(&url, serde_json::to_value(&spell)?).await?;
         let spell_result: SpellResult = res.json().await?;
 
         Ok(spell_result)
@@ -136,28 +137,31 @@ impl Fount {
         Ok(user)
     }
 
-    pub async fn get_nineum(&self, uuid: &str) -> Result<FountUser, Box<dyn std::error::Error>> {
+    pub async fn get_nineum(&self, uuid: &str) -> Result<Nineum, Box<dyn std::error::Error>> {
         let timestamp = Self::get_timestamp();
         let message = format!("{}{}", timestamp, uuid);
         let signature = self.sessionless.sign(&message).to_hex();
 
         let url = format!("{}user/{}/nineum?timestamp={}&signature={}", self.base_url, uuid, timestamp, signature);
         let res = self.get(&url).await?;
-        let user: FountUser = res.json().await?;
+        let nineum: Nineum = res.json().await?;
 
-        Ok(user)
+        Ok(nineum)
     }
 
     pub async fn transfer_nineum(&self, uuid: &str, destination_uuid: &str, nineum_unique_ids: &Vec<String>, price: &u32, currency: &str) -> Result<FountUser, Box<dyn std::error::Error>> {
         let timestamp = Self::get_timestamp();
         let nineum_ids = nineum_unique_ids.join("");
         let message = format!("{}{}{}{}{}{}", timestamp, uuid, destination_uuid, nineum_ids, price, currency);
+println!("{}", message);
         let signature = self.sessionless.sign(&message).to_hex();
 
         let payload = json!({
             "timestamp": timestamp,
             "destinationUUID": destination_uuid,
             "nineumUniqueIds": nineum_unique_ids,
+            "price": price,
+            "currency": currency, 
             "signature": signature
         }).as_object().unwrap().clone();
 

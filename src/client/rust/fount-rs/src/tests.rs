@@ -1,15 +1,18 @@
-use crate::{FountUser, Fount, Prompt};
+use crate::{FountUser, Fount, Gateway, Nineum, Spell, SpellResult, SuccessResult};
 use sessionless::hex::IntoHex;
+use std::collections::HashMap;
+use serde_json::json;
+use serde_json::Value;
 
 #[actix_rt::test]
 async fn test_fount() {
 
-    let mut saved_user: Option<FountUser> = Some(FountUser::new("foo".to_string(), "bar".to_string()));
-    let mut saved_user2: Option<FountUser> = Some(FountUser::new("foo".to_string(), "bar".to_string()));
+    let mut saved_user: Option<FountUser>;
+    let mut saved_user2: Option<FountUser>; 
     let fount = Fount::new(Some("http://localhost:3006/".to_string()));
     let fount2 = Fount::new(Some("http://localhost:3006/".to_string()));
 
-    async fn create_user(fount: &Fount, saved_user: &FountUser) -> Option<FountUser> {
+    async fn create_user(fount: &Fount) -> Option<FountUser> {
     println!("creating user");
 	let result = fount.create_user().await;
     println!("got to here");
@@ -33,7 +36,7 @@ async fn test_fount() {
 
     async fn create_user2(fount: &Fount, saved_user2: &FountUser) -> Option<FountUser> {
     println!("creating user2");
-	let result = fount.create_user(fount_user).await;
+	let result = fount.create_user().await;
     println!("got to here");
 
 	match result {
@@ -73,7 +76,7 @@ async fn test_fount() {
     }
 
     async fn get_user_by_public_key(fount: &Fount) -> Option<FountUser> {
-	let result = fount.get_user_by_uuid().await; 
+	let result = fount.get_user_by_public_key().await; 
      
 	match result {
 	    Ok(user) => {
@@ -93,34 +96,35 @@ async fn test_fount() {
 
     async fn resolve(fount: &Fount, saved_user: &FountUser) -> Option<SpellResult> {
         let timestamp = Fount::get_timestamp();
-        let spell = "test";
-        let caster_uuid = saved_user.uuid;
+        let spell = "test".to_string();
+        let caster_uuid = format!("{}", saved_user.uuid);
         let total_cost = 400;
-        let mp = 400;
+        let mp = true;
         let ordinal = 1;
-        let gateways = Vec<Gateway>();
+        let gateways = Vec::<Gateway>::new();
 
         let message = format!("{}{}{}{}{}{}", timestamp, spell, caster_uuid, total_cost, mp, ordinal);
-        let signature = self.sessionless.sign(&message).to_hex(); 
+        let signature = fount.sessionless.sign(&message).to_hex(); 
 
-        let payload = json!({
-            "timestamp": timestamp,
-            "spell": spell,
-            "casterUUID": caster_uuid,
-            "totalCost": total_cost,
-            "mp": mp,
-            "ordinal": ordinal,
-            "gateways": gateways,
-            "signature": signature
-        });     
+        let spell = Spell {
+            timestamp: timestamp,
+            spell: spell,
+            caster_uuid: caster_uuid,
+            total_cost: total_cost,
+            mp: mp,
+            ordinal: ordinal,
+            gateways: gateways,
+            caster_signature: signature,
+            extra: HashMap::<String, Value>::new()
+        };     
   
-	let result = fount.resolve(&payload).await;         
+	let result = fount.resolve(&spell).await;         
      
 	match result {
 	    Ok(spell_result) => {
 		assert_eq!(
-		    user.pending_prompts.len(),
-		    1
+		    spell_result.success,
+		    true
 		);
                 Some(spell_result)
 	    }
@@ -132,12 +136,16 @@ async fn test_fount() {
 	} 
     }
 
-    async fn grant(fount: &Fount, save_user: &FountUser, saved_user2: &FountUser) -> Option<FountUser> {
-        let result = fount.grant(&saved_user.uuid, &saved_user2.uuid, 200, "Testing out grants").await;
+    async fn grant(fount: &Fount, saved_user: &FountUser, saved_user2: &FountUser) -> Option<FountUser> {
+        let result = fount.grant(&saved_user.uuid, &saved_user2.uuid, &200, "Testing out grants").await;
 
         match result {
-            Ok(user) {
-
+            Ok(user) => {
+                assert_eq!(
+                    user.mp,
+                    586
+                );
+                Some(user)
             }
             Err(error) => {
                 eprintln!("Error occurred grant: {}", error);
@@ -151,8 +159,12 @@ async fn test_fount() {
         let result = fount2.get_nineum(&saved_user2.uuid).await;
 
         match result {
-            Ok(nineum) {
-
+            Ok(nineum) => {
+                assert_eq!(
+                    nineum.nineum.len(),
+                    2
+                );
+                Some(nineum)
             }
             Err(error) => {
                 eprintln!("Error occurred grant: {}", error);
@@ -166,22 +178,24 @@ async fn test_fount() {
         let result = fount.get_nineum(&saved_user.uuid).await;
 
         match result {
-            Ok(nineum) {
-                let transfer_result = fount.transfer_nineum(&saved_user.uuid, &saved_user2.uuid, nineum, 0, "usd").await;
+            Ok(nineum) => {
+                let transfer_result = fount.transfer_nineum(&saved_user.uuid, &saved_user2.uuid, &nineum.nineum, &0, "usd").await;
                
                 match transfer_result {
-                    Ok(user) {
-                        assert...
-
-                        Ok(user)
+                    Ok(user) => {
+                        assert_eq!(
+                            user.nineum_count,
+                            0
+                        );
+                        return Some(user)
                     }
-                }
-                Err(error) => {
-		    eprintln!("Error occurred transfer: {}", error);
-		    println!("Error details: {:?}", error);
-		    None
-                }
+		    Err(error) => {
+			eprintln!("Error occurred transfer: {}", error);
+			println!("Error details: {:?}", error);
+			None
+		    }
 
+                }
             }
             Err(error) => {
                 eprintln!("Error occurred transfer2: {}", error);
@@ -196,7 +210,11 @@ async fn test_fount() {
 
         match result {
             Ok(success) => {
-
+                assert_eq!(
+                    success.success,
+                    true
+                );
+                Some(success)
             }
             Err(error) => {
                 eprintln!("Error occurred delete: {}", error);
@@ -206,104 +224,10 @@ async fn test_fount() {
         }
     }
 
-    async fn sign_prompt(fount: &Fount, fount2: &Fount, saved_user: &FountUser, saved_user2: &FountUser) -> Option<FountUser> {
-        let pending_prompts: Vec<Prompt> = saved_user.pending_prompts.values().cloned().collect();
-	let result = fount2.sign_prompt(&saved_user2.uuid, &pending_prompts[0]).await; 
-        let updated_user = fount.get_user(&saved_user.uuid).await;
-     
-	match updated_user {
-	    Ok(user) => {
-                let updated_prompts: Vec<Prompt> = user.pending_prompts.values().cloned().collect();
-                let formatted = format!("{:?}", updated_prompts[0].new_uuid);
-		assert_eq!(
-		    formatted.len(),
-		    44
-		);
-                Some(user)
-	    }
-	    Err(error) => {
-		eprintln!("Error occurred sign_prompt: {}", error);
-		println!("Error details: {:?}", error);
-                None
-	    }
-	} 
-    }
+    saved_user = Some(create_user(&fount).await.expect("user"));
+    saved_user2 = Some(create_user(&fount2).await.expect("user2"));
 
-    async fn associate(fount: &Fount, saved_user: &FountUser) -> Option<FountUser> {
-        let pending_prompts: Vec<Prompt> = saved_user.pending_prompts.values().cloned().collect();
-	let result = fount.associate(&saved_user.uuid, &pending_prompts[0]).await;
-     
-	match result {
-	    Ok(user) => {
-		assert_eq!(
-		    user.keys["interactingKeys"].len(),
-		    2
-		);   
-                Some(user)
-	    }
-	    Err(error) => {
-		eprintln!("Error occurred associate: {}", error);
-		println!("Error details: {:?}", error);
-                None
-	    }
-	}
-    }
-
-    async fn post_message(fount: &Fount, saved_user: &FountUser, saved_user2: &FountUser) {
-	let result = fount.post_message(&saved_user.uuid, &saved_user2.uuid, "Here is a test message".to_string()).await;
-     
-	match result {
-	    Ok(success) => {
-		assert_eq!(
-		    success.success,
-		    true
-		);
-	    }
-	    Err(error) => {
-		eprintln!("Error occurred post_message: {}", error);
-		println!("Error details: {:?}", error);
-	    }
-	}
-    }
-
-    async fn delete_key(fount: &Fount, saved_user: &FountUser, saved_user2: &FountUser) -> Option<FountUser> {
-	let result = fount.delete_key(&saved_user.uuid, &saved_user2.uuid).await;
-     
-	match result {
-	    Ok(user) => {
-		assert_eq!(
-		    user.keys["interactingKeys"].len(),
-		    1
-		);
-                Some(user)
-	    }
-	    Err(error) => {
-		eprintln!("Error occurred delete_key: {}", error);
-		println!("Error details: {:?}", error);
-                None
-	    }
-	}
-    }
-
-
-    async fn delete_user(fount: &Fount, saved_user: &FountUser) {
-	let result = fount.delete_user(&saved_user.uuid).await;
-
-	match result {
-	    Ok(success) => {
-	       assert_eq!(
-		    success.success,
-		    true
-		); 
-	    }
-	    Err(error) => {
-		eprintln!("Error occurred delete_user: {}", error);
-		println!("Error details: {:?}", error);
-	    }
-	}
-    }
-
-    if let Some(ref user) = saved_user {
+/*    if let Some(ref user) = saved_user {
         saved_user = Some(create_user(&fount, user).await.expect("user"));
     } else {    
         panic!("Failed to create user to begin with"); 
@@ -314,42 +238,46 @@ async fn test_fount() {
     } else {
         panic!("Failed to create user2");
     }
+*/
 
     if let Some(ref user) = saved_user2 {
-        saved_user2 = Some(get_user(&fount2, user).await.expect("get user2 1"));
+        saved_user2 = Some(get_user_by_uuid(&fount2, user).await.expect("get user2 1"));
+    } else {
+        panic!("Failed to get user");
+    }
+
+    if let Some(ref user) = saved_user2 {
+        saved_user2 = Some(get_user_by_public_key(&fount2).await.expect("get user2 by pubKey"));
     } else {
         panic!("Failed to get user");
     }
 
     if let Some(ref user) = saved_user {
-	saved_user = Some(get_prompt(&fount, user).await.expect("get prompt"));
+	Some(resolve(&fount, user).await.expect("resolve"));
+        saved_user = Some(get_user_by_uuid(&fount, user).await.expect("get user after resolving spell"));
     } else {
 	panic!("Failed to get prompt");
     }
 
     if let (Some(ref user), Some(ref user2)) = (saved_user, saved_user2) {
-        Some(sign_prompt(&fount, &fount2, user, user2).await);
-        saved_user = Some(get_user(&fount, user).await.expect("get user after signing prompt"));
-        saved_user2 = Some(get_user(&fount2, user2).await.expect("get user2"));
+        Some(grant(&fount, user, user2).await);
+        saved_user = Some(get_user_by_uuid(&fount, user).await.expect("get user after grant"));
+        saved_user2 = Some(get_user_by_uuid(&fount2, user2).await.expect("get user2"));
     } else { 
         panic!("Failed to sign prompt");
     } 
 
-    if let (Some(ref user), Some(ref user2)) = (saved_user, saved_user2) {
-        saved_user = Some(associate(&fount, user).await.expect("associate"));
+    if let Some(ref user) = saved_user {
+        Some(get_nineum(&fount, user).await);
+        saved_user = Some(get_user_by_uuid(&fount, user).await.expect("associate"));
 
-        if let Some(ref user) = saved_user {
-            post_message(&fount, user, user2).await;
+        if let (Some(ref user), Some(ref user2)) = (saved_user, saved_user2) {
+            saved_user = Some(transfer_nineum(&fount, user, user2).await.expect("transferring"));
+            saved_user2 = Some(get_user_by_uuid(&fount2, &user2).await.expect("getting user 2"));
         } else {
 	    panic!("Failed to post message");
 	} 
         
-        if let Some(ref user) = saved_user {
-            saved_user = Some(delete_key(&fount, user, user2).await.expect("delete_key"));
-        } else {
-	    panic!("Failed to delete key");
-	} 
-
         if let Some(ref user) = saved_user {
             delete_user(&fount, &user).await;
         } else {

@@ -84,7 +84,7 @@ console.log('foundUser', foundUser);
     newUser.lastMPUsed = new Date().getTime();
 
     newUser.experience = 0;
-    newUser.lastExperienceCalculated = new Date().getTime() + '';
+    newUser.lastExperienceCalculated = new Date().getTime();
     newUser.experiencePool = 0;
 
     newUser.nineumCount = 0;
