@@ -10,6 +10,7 @@ use sessionless::hex::IntoHex;
 use sessionless::{Sessionless, Signature};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
+use std::option::Option;
 use crate::structs::{FountUser, Gateway, Nineum, Spell, SpellResult, SuccessResult, Transfer};
 
 pub struct Fount {
@@ -19,11 +20,11 @@ pub struct Fount {
 }
 
 impl Fount {
-    pub fn new(base_url: Option<String>) -> Self {
+    pub fn new(base_url: Option<String>, sessionless: Option<Sessionless>) -> Self {
         Fount {
             base_url: base_url.unwrap_or("https://dev.fount.allyabase.com/".to_string()),
             client: Client::new(),
-            sessionless: Sessionless::new(),
+            sessionless: sessionless.unwrap_or(Sessionless::new()),
         }
     }
 

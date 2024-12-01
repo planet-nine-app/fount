@@ -1,5 +1,7 @@
 use crate::{FountUser, Fount, Gateway, Nineum, Spell, SpellResult, SuccessResult};
 use sessionless::hex::IntoHex;
+use sessionless::hex::FromHex;
+use sessionless::{Sessionless, PrivateKey};
 use std::collections::HashMap;
 use serde_json::json;
 use serde_json::Value;
@@ -9,8 +11,9 @@ async fn test_fount() {
 
     let mut saved_user: Option<FountUser>;
     let mut saved_user2: Option<FountUser>; 
-    let fount = Fount::new(Some("http://localhost:3006/".to_string()));
-    let fount2 = Fount::new(Some("http://localhost:3006/".to_string()));
+    let fount = Fount::new(Some("http://localhost:3006/".to_string()), None);
+    let fount2 = Fount::new(Some("http://localhost:3006/".to_string()), None);
+    let fount3 = Fount::new(Some("http://localhost:3006/".to_string()), Some(Sessionless::from_private_key(PrivateKey::from_hex("a29435a4fb1a27a284a60b3409efeebbe6a64db606ff38aeead579ccf2262dc4").expect("private key"))));
 
     async fn create_user(fount: &Fount) -> Option<FountUser> {
     println!("creating user");
