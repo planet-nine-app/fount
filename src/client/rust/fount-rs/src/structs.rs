@@ -3,24 +3,6 @@ use serde_json::json;
 use std::collections::HashMap;
 use serde_json::Value;
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all="camelCase")]
-pub struct FountUser {
-    pub pub_key: String,
-    pub mp: u32,
-    #[serde(rename = "maxMP")]
-    pub max_mp: u32,
-    #[serde(rename = "lastMPUsed")]
-    pub last_mp_used: u64,
-    pub experience: u64,
-    #[serde(rename = "lastExperienceCalculated")]
-    pub last_experience_calculated: u64,
-    pub experience_pool: u32,
-    pub nineum_count: u64,
-    pub ordinal: u32,
-    pub uuid: String
-}
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Gateway {

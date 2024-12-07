@@ -11,12 +11,30 @@ use sessionless::{Sessionless, Signature};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
 use std::option::Option;
-use crate::structs::{FountUser, Gateway, Nineum, Spell, SpellResult, SuccessResult, Transfer};
+use crate::structs::{Gateway, Nineum, Spell, SpellResult, SuccessResult, Transfer};
 
 pub struct Fount {
     base_url: String,
     client: Client,
     pub sessionless: Sessionless,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all="camelCase")]
+pub struct FountUser {
+    pub pub_key: String,
+    pub mp: u32,
+    #[serde(rename = "maxMP")]
+    pub max_mp: u32,
+    #[serde(rename = "lastMPUsed")]
+    pub last_mp_used: u64,
+    pub experience: u64,
+    #[serde(rename = "lastExperienceCalculated")]
+    pub last_experience_calculated: u64,
+    pub experience_pool: u32,
+    pub nineum_count: u64,
+    pub ordinal: u32,
+    pub uuid: String
 }
 
 impl Fount {

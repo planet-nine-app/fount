@@ -35,7 +35,11 @@ console.log('About to try and get caster: ', payload.casterUUID);
     }
 
     if(payload.mp) {
-      resolved = await user.spendMP(caster, payload.totalCost);
+      if(caster.mp >= payload.totalCost) {
+        resolved = await user.spendMP(caster, payload.totalCost);
+      } else {
+        resolved = false;
+      }
     } else {
       // resolved = await user.spendMoney(caster, payload, gatewayUsers, payload.totalCost);
     }
