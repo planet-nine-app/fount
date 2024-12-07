@@ -159,7 +159,7 @@ console.log(caster.mp);
       gatewayUsers
     };
 
-    const message = timestamp + caster.uuid;
+    const message = payload.timestamp + caster.uuid;
     payload.signature = await sessionless.sign(message);
 
     const addieURL = process.env.LOCALHOST ? 'http://localhost:3005/' : `${SUBDOMAIN}.addie.allyabase.com/`;    
