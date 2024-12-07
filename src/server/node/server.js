@@ -19,6 +19,7 @@ import nineum from './src/nineum/nineum.js';
 import experience from './src/experience/experience.js';
 import sessionless from 'sessionless-node';
 import bdo from 'bdo-js';
+import addie from 'addie-js';
 import spellbook from './spellbooks/spellbook.js';
 
 const allowedTimeDifference = 300000; // keep this relaxed for now
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 
 const SUBDOMAIN = process.env.SUBDOMAIN || 'dev';
 bdo.baseURL = process.env.LOCALHOST ? 'http://localhost:3003/' : `${SUBDOMAIN}.bdo.allyabase.com/`;
+addie.baseURL = process.env.LOCALHOST ? 'http://localhost:3005/' : `${SUBDOMAIN}.bdo.allyabase.com/`;
 
 const bdoHashInput = `${SUBDOMAIN}fount`;
 
@@ -58,18 +60,22 @@ const bootstrap = async () => {
     const bdoUUID = await bdo.createUser(bdoHash, spellbook, db.saveKeys, db.getKeys);
 console.log(bdoUUID);
     const spellbooks = await bdo.putSpellbook(bdoUUID, bdoHash, spellbook);
+    const addieUUID = await addie.createUser(db.saveKeys, db.getKeys);
+console.log(addieUUID);
     const fount = {
       uuid: 'fount',
       bdoUUID,
+      addieUUID,
       spellbook
     };
 
-    if(!fount.bdoUUID || spellbooks.length < 1) {
+    if(!fount.bdoUUID || !fount.addieUUID || spellbooks.length < 1) {
       throw new Error('bootstrap failed');
     }
 
     await db.saveUser(fount);
   } catch(err) {
+console.warn(err);
     repeat(bootstrap);
   }
 };

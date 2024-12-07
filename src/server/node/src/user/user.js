@@ -1,6 +1,17 @@
 import db from '../persistence/db.js';
 import nineum from '../nineum/nineum.js';
+import sessionless from 'sessionless-node';
 import dayjs from 'dayjs';
+
+await sessionless.generateKeys(() => {}, db.getKeys);
+
+const post = async (url, payload) => {
+  return await fetch(url, {
+    method: 'post',
+    body: JSON.stringify(payload),
+    headers: {'Content-Type': 'application/json'}
+  });
+};
  
 const maxMPAndRegenerationRate = { // These magic numbers have an interesting future role. The idea
                                       // was that these would grow with the system so that as more people
@@ -141,43 +152,20 @@ console.log(caster.mp);
   */
 
   spendMoney: async (caster, spell, gatewayUsers, totalCost) => {
+    const payload = {
+      timestamp: new Date().getTime() + '',
+      caster,
+      spell,
+      gatewayUsers
+    };
 
-/*    return await addie.spendMoney(caster, spell, gatewayUsers, totalCost);
+    const message = timestamp + caster.uuid;
+    payload.signature = await sessionless.sign(message);
 
-    const totalMinimum = spell.gateways.reduce((acc, cur) => acc + cur.minimumCost, 0);
-    const totalDiff = totalCost - totalMinimum;
-    if(totalDiff < 0) {
-      return false;
-    }
-    const additional = Math.floor(totalDiff / (spell.gateways.length + 1));
+    const addieURL = process.env.LOCALHOST ? 'http://localhost:3005/' : `${SUBDOMAIN}.addie.allyabase.com/`;    
 
-    const charge = await stripeSDK.charges.create({
-      amount: totalCost, // Amount in cents
-      currency: 'usd',
-      source: 'tok_bypassPending', // payment source for user
-      transfer_group: 'GROUP_1',
-      description: 'Charge for order 123'
-    });   
-
-    const transferPromises = gatewayUsers.map((gatewayUser, index) => {
-      return stripeSDK.transfers.create({
-        amount: spell.gateways[index].minimumCost + additional,
-        currency: 'usd',
-        destination: gatewayUser.stripeAccountId, // ID of the first connected account
-        transfer_group: 'GROUP_1'
-      });
-    });
-
-    transferPromises.push(stripeSDK.transfers.create({
-      amount: additional,
-      currency: 'usd',
-      destination: '<account>',
-      transfer_group: 'GROUP_1'
-    }));
-
-    const transfers = await Promise.all(transferPromises);
-  }*/
-}
+    return await post(addieURL, payload);
+  }
 };
 
 export default user;

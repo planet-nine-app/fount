@@ -41,7 +41,7 @@ console.log('About to try and get caster: ', spell.casterUUID);
         resolved = false;
       }
     } else {
-      resolved = await user.spendMoney(caster, spell, gatewayUsers, spell.totalCost);
+      resolved = await user.spendMoney(caster, spell, gatewayUsers);
     }
 
     if(resolved) {
