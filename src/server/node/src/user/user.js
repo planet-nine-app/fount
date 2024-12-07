@@ -162,7 +162,9 @@ console.log(caster.mp);
     const message = payload.timestamp + caster.uuid;
     payload.signature = await sessionless.sign(message);
 
-    const addieURL = process.env.LOCALHOST ? 'http://localhost:3005/' : `${SUBDOMAIN}.addie.allyabase.com/`;    
+    const path = `money/processor/stripe/user/${addieUser.uuid}`;
+
+    const addieURL = process.env.LOCALHOST ? `http://localhost:3005/${path}` : `${SUBDOMAIN}.addie.allyabase.com/${path}`;    
 
     return await post(addieURL, payload);
   }
