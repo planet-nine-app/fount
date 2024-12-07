@@ -139,15 +139,17 @@ console.log(caster.mp);
  /**
   * This function is being split between fount and addie, and will be commented out here until that's done.
   */
-/*
-  spendMoney: async (caster, payload, totalCost) => {
 
-    const totalMinimum = payload.gateways.reduce((acc, cur) => acc + cur.minimumCost, 0);
+  spendMoney: async (caster, spell, gatewayUsers, totalCost) => {
+
+/*    return await addie.spendMoney(caster, spell, gatewayUsers, totalCost);
+
+    const totalMinimum = spell.gateways.reduce((acc, cur) => acc + cur.minimumCost, 0);
     const totalDiff = totalCost - totalMinimum;
     if(totalDiff < 0) {
       return false;
     }
-    const additional = Math.floor(totalDiff / (payload.gateways.length + 1));
+    const additional = Math.floor(totalDiff / (spell.gateways.length + 1));
 
     const charge = await stripeSDK.charges.create({
       amount: totalCost, // Amount in cents
@@ -159,7 +161,7 @@ console.log(caster.mp);
 
     const transferPromises = gatewayUsers.map((gatewayUser, index) => {
       return stripeSDK.transfers.create({
-        amount: payload.gateways[index].minimumCost + additional,
+        amount: spell.gateways[index].minimumCost + additional,
         currency: 'usd',
         destination: gatewayUser.stripeAccountId, // ID of the first connected account
         transfer_group: 'GROUP_1'
@@ -175,6 +177,7 @@ console.log(caster.mp);
 
     const transfers = await Promise.all(transferPromises);
   }*/
+}
 };
 
 export default user;

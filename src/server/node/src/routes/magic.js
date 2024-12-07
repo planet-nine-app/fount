@@ -5,15 +5,15 @@ const resolve = async (req, res) => {
   try {
 console.log('should resolve');
     const spellName = req.params.spellName;
-    const payload = req.body;
+    const spell = req.body;
 
     let resolved = true;
 
     const gatewayUsers = [];
 
-    if(payload.gateways && payload.gateways.length > 0) {
-      for(let i = 0; i < payload.gateways.length; i++) {
-	const gateway = payload.gateways[i];
+    if(spell.gateways && spell.gateways.length > 0) {
+      for(let i = 0; i < spell.gateways.length; i++) {
+	const gateway = spell.gateways[i];
 	const gatewayUser = await user.getUser(gateway.uuid);
 	gatewayUsers.push(gatewayUser);
 	const signature = gateway.signature;
@@ -26,22 +26,22 @@ console.log('should resolve');
       }
     }
 
-console.log('About to try and get caster: ', payload.casterUUID);
-    const caster = await user.getUser(payload.casterUUID);
-    const message = payload.timestamp + payload.spell + payload.casterUUID + payload.totalCost + payload.mp + payload.ordinal;
+console.log('About to try and get caster: ', spell.casterUUID);
+    const caster = await user.getUser(spell.casterUUID);
+    const message = spell.timestamp + spell.spell + spell.casterUUID + spell.totalCost + spell.mp + spell.ordinal;
 
-    if(!sessionless.verifySignature(payload.casterSignature, message, caster.pubKey)) {
+    if(!sessionless.verifySignature(spell.casterSignature, message, caster.pubKey)) {
       resolved = false;
     }
 
-    if(payload.mp) {
-      if(caster.mp >= payload.totalCost) {
-        resolved = await user.spendMP(caster, payload.totalCost);
+    if(spell.mp) {
+      if(caster.mp >= spell.totalCost) {
+        resolved = await user.spendMP(caster, spell.totalCost);
       } else {
         resolved = false;
       }
     } else {
-      // resolved = await user.spendMoney(caster, payload, gatewayUsers, payload.totalCost);
+      resolved = await user.spendMoney(caster, spell, gatewayUsers, spell.totalCost);
     }
 
     if(resolved) {
