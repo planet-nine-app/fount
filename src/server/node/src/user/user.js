@@ -151,7 +151,7 @@ console.log(caster.mp);
   * This function is being split between fount and addie, and will be commented out here until that's done.
   */
 
-  spendMoney: async (caster, spell, gatewayUsers, totalCost) => {
+  spendMoney: async (addieUser, caster, spell, gatewayUsers, totalCost) => {
     const payload = {
       timestamp: new Date().getTime() + '',
       caster,
@@ -162,7 +162,9 @@ console.log(caster.mp);
     const message = payload.timestamp + caster.uuid;
     payload.signature = await sessionless.sign(message);
 
-    const path = `money/processor/stripe/user/${addieUser.uuid}`;
+    let foundUser = await db.getUser('fount');
+
+    const path = `money/processor/stripe/user/${foundUser.addieUUID}`;
 
     const addieURL = process.env.LOCALHOST ? `http://localhost:3005/${path}` : `${SUBDOMAIN}.addie.allyabase.com/${path}`;    
 
