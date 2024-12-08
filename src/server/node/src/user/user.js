@@ -151,7 +151,7 @@ console.log(caster.mp);
   * This function is being split between fount and addie, and will be commented out here until that's done.
   */
 
-  spendMoney: async (addieUser, caster, spell, gatewayUsers, totalCost) => {
+  spendMoney: async (caster, spell, gatewayUsers, totalCost) => {
     const payload = {
       timestamp: new Date().getTime() + '',
       caster,
