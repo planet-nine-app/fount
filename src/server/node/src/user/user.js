@@ -158,11 +158,12 @@ console.log(caster.mp);
       spell,
       gatewayUsers
     };
+    
+    let foundUser = await db.getUser('fount');
 
-    const message = payload.timestamp + caster.uuid;
+    const message = payload.timestamp + foundUser.addieUUID;
     payload.signature = await sessionless.sign(message);
 
-    let foundUser = await db.getUser('fount');
 
     const path = `money/processor/stripe/user/${foundUser.addieUUID}`;
 
