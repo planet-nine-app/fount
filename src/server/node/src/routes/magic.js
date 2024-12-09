@@ -13,11 +13,12 @@ console.log('should resolve');
 
     if(spell.gateways && spell.gateways.length > 0) {
       for(let i = 0; i < spell.gateways.length; i++) {
+	const gateway = spell.gateways[i];
+
         if(gateway.signature.length < 5) {
           continue;
         }
 
-	const gateway = spell.gateways[i];
 	const gatewayUser = await user.getUser(gateway.uuid);
 	gatewayUsers.push(gatewayUser);
 	const signature = gateway.signature;
