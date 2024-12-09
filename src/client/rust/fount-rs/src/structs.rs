@@ -6,14 +6,14 @@ use serde_json::Value;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Gateway {
-    timestamp: String,
-    uuid: String,
-    pub_key: String,
-    minimum_cost: u32,
-    ordinal: u64,
-    signature: String,
+    pub timestamp: String,
+    pub uuid: String,
+    pub pub_key: String,
+    pub minimum_cost: u32,
+    pub ordinal: u64,
+    pub signature: String,
     #[serde(flatten)]
-    extra: HashMap<String, Value>
+    pub extra: HashMap<String, Value>
 }
 
 impl Default for Gateway {
@@ -22,7 +22,7 @@ impl Default for Gateway {
 	    timestamp: "now".to_string(),
 	    uuid: "test".to_string(),
 	    pub_key: "".to_string(),
-	    minimum_cost: 1,
+	    minimum_cost: 100,
 	    ordinal: 1,
 	    signature: "".to_string(),
 	    extra: HashMap::<String, Value>::new()

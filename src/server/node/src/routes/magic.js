@@ -18,6 +18,10 @@ console.log('should resolve');
 	gatewayUsers.push(gatewayUser);
 	const signature = gateway.signature;
 
+        if(signature.length < 5) {
+          continue;
+        }
+
 	const message = gateway.timestamp + gateway.uuid + gateway.minimumCost + gateway.ordinal;
 
 	if(!signature || !sessionless.verifySignature(signature, message, gatewayUser.pubKey)) {
