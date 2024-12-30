@@ -83,15 +83,52 @@ const getNineum = async (req, res) => {
 };
 
 const grantNineum = async (req, res) => {
-  const uuid = req.params.uuid;
-  const body = req.body;
-  const timestamp = body.timestamp;
-  const charge = body.charge;
-  const direction = body.direction;
-  const rarity = body.rarity;
-  const size = body.size;
-  const texture = body.texture;
-  const shape = body.shape;
+  try {
+    const uuid = req.params.uuid;
+    const body = req.body;
+    const timestamp = body.timestamp;
+    const toUserUUID = body.toUserUUID;
+    const charge = body.charge;
+    const direction = body.direction;
+    const rarity = body.rarity;
+    const size = body.size;
+    const texture = body.texture;
+    const shape = body.shape;
+
+    const message = timestamp + uuid + toUserUUID;
+
+    const foundUser = await user.getUser(uuid);
+
+    if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status(403);
+      return res.send({error: 'auth error'});
+    }
+
+    const toUser = await user.getUser(toUserUUID);
+    if(!toUser) {
+      throw new Error('no to user found');
+    }
+
+    const galacticNineum = foundUserNineum.filter(nineum => nineum.slice(14, 16) === 'ff');
+    if(galacticNineum.length > 0) {
+      const galaxy = galacticNineum[0].slice(2, 10);
+      const grantedNineum = await nineum.constructSpecificFlavorNineum(galaxy, charge, direction, rarity, size, texture, shape);
+      await db.saveNineum(toUser, [adminNineum]);
+      const updatedToUser = await user.getUser(toUserUUID);
+      return res.send(updatedToUser);
+    }
+
+    res.status(404);
+    res.send({error: 'not found'});
+  } catch(err) {
+console.warn(err);
+    res.status(404);
+    res.send({error: 'not found'});
+  }
+};
+
+const segmentNineum = async (req, res) => {
+  
 };
 
 const grantAdminNineum = async (req, res) => {

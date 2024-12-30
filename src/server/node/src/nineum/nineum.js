@@ -207,9 +207,9 @@ const nineum = {
     return universe + galaxy + flavor + year + ordinal;
   },
 
-  constructSpecificFlavorNineum: async (_charge, _direction, _rarity, _size, _texture, _shape) => {
+  constructSpecificFlavorNineum: async (_galaxy, _charge, _direction, _rarity, _size, _texture, _shape) => {
     const universe = '01';
-    const galaxy = process.env.NINEUM_ADDRESS || '28880014'; // Open Source Force's galaxy as unknowingly chosed by Wick3d in #chat
+    const galaxy = _galaxy || '28880014'; // Open Source Force's galaxy as unknowingly chosed by Wick3d in #chat
     let flavor = '';
     let ordinal = '';
   
