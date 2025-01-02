@@ -94,6 +94,7 @@ const grantNineum = async (req, res) => {
     const size = body.size;
     const texture = body.texture;
     const shape = body.shape;
+    const quantity = body.quantity;
 
     const message = timestamp + uuid + toUserUUID;
 
@@ -110,10 +111,12 @@ const grantNineum = async (req, res) => {
     }
 
     const galacticNineum = foundUserNineum.filter(nineum => nineum.slice(14, 16) === 'ff');
-    if(galacticNineum.length > 0) {
+    const adminNineum = foundUserNineum.filter(nineum => nineum.slice(14, 16) === 'fe');
+    const isAllowed = (galacticNineum.length > 0 || adminNineum.length > 0);
+    if(isAllowed) {
       const galaxy = galacticNineum[0].slice(2, 10);
-      const grantedNineum = await nineum.constructSpecificFlavorNineum(galaxy, charge, direction, rarity, size, texture, shape);
-      await db.saveNineum(toUser, [adminNineum]);
+      const grantedNineum = await nineum.constructSpecificFlavorNineum(galaxy, charge, direction, rarity, size, texture, shape, quantity);
+      await db.saveNineum(toUser, grantedNineum);
       const updatedToUser = await user.getUser(toUserUUID);
       return res.send(updatedToUser);
     }

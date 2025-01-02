@@ -207,7 +207,7 @@ const nineum = {
     return universe + galaxy + flavor + year + ordinal;
   },
 
-  constructSpecificFlavorNineum: async (_galaxy, _charge, _direction, _rarity, _size, _texture, _shape) => {
+  constructSpecificFlavorNineum: async (_galaxy, _charge, _direction, _rarity, _size, _texture, _shape, quantity) => {
     const universe = '01';
     const galaxy = _galaxy || '28880014'; // Open Source Force's galaxy as unknowingly chosed by Wick3d in #chat
     let flavor = '';
@@ -226,9 +226,14 @@ const nineum = {
     const year = zeroPad('' + yearDiff, 2);
 
     const flavorCount = await db.countForFlavorOfNineum(flavor);
-    ordinal = zeroPad((flavorCount + 1) + '', 8);
+//    ordinal = zeroPad((flavorCount + 1) + '', 8);
 
-    return universe + galaxy + flavor + year + ordinal;
+    let constructed = [];
+    for(var i = 0; i < quantity; i++) {
+      constructed.push(universe + galaxy + flavor + year + (flavorCount + i + 1));
+    }
+
+    return constructed;
   }
 };
 
