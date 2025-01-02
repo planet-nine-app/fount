@@ -4,82 +4,106 @@ import nineum from '../nineum/nineum.js';
 import sessionless from 'sessionless-node';
 
 const putUser =  async (req, res) => {
-  const pubKey = req.body.pubKey;
-  const message = req.body.timestamp +  pubKey;
-  const signature = req.body.signature;
-console.log(req.body.timestamp);
+  try {
+    const pubKey = req.body.pubKey;
+    const message = req.body.timestamp +  pubKey;
+    const signature = req.body.signature;
+  console.log(req.body.timestamp);
 
-  if(!signature || !sessionless.verifySignature(signature, message, pubKey)) {
-console.log(signature);
-console.log(message);
-console.log(pubKey);
-console.log('auth error');
-    res.status(403);
-    return res.send({error: 'auth error'});
+    if(!signature || !sessionless.verifySignature(signature, message, pubKey)) {
+  console.log(signature);
+  console.log(message);
+  console.log(pubKey);
+  console.log('auth error');
+      res.status(403);
+      return res.send({error: 'auth error'});
+    }
+
+    const newUser = req.body.user || { pubKey };
+
+    const foundUser = await user.putUser(newUser, pubKey);
+
+  console.log('sending back', foundUser);
+
+    res.send(foundUser);
+  } catch(err) {
+console.warn(err);
+    res.status(404);
+    res.send({error: 'not found'});
   }
-
-  const newUser = req.body.user || { pubKey };
-
-  const foundUser = await user.putUser(newUser, pubKey);
-
-console.log('sending back', foundUser);
-
-  res.send(foundUser);
 };
 
 const getUserByUUID =  async (req, res) => {
-  const uuid = req.params.uuid;
-  const timestamp = req.query.timestamp;
-  const signature = req.query.signature;
-  const message = timestamp + uuid;
+  try {
+    const uuid = req.params.uuid;
+    const timestamp = req.query.timestamp;
+    const signature = req.query.signature;
+    const message = timestamp + uuid;
 
-  const foundUser = await user.getUser(req.params.uuid);
+    const foundUser = await user.getUser(req.params.uuid);
 
-  if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
-    res.status(403);
-    return res.send({error: 'auth error'});
+    if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status(403);
+      return res.send({error: 'auth error'});
+    }
+
+  console.log('sending back', foundUser);
+
+    res.send(foundUser);
+  } catch(err) {
+console.warn(err);
+    res.status(404);      
+    res.send({error: 'not found'});
   }
-
-console.log('sending back', foundUser);
-
-  res.send(foundUser);
 };
 
 const getUserByPublicKey = async (req, res) => {
-  const pubKey = req.params.pubKey;
-  const timestamp = req.query.timestamp;
-  const signature = req.query.signature;
-  const message = timestamp + pubKey;
+  try {
+    const pubKey = req.params.pubKey;
+    const timestamp = req.query.timestamp;
+    const signature = req.query.signature;
+    const message = timestamp + pubKey;
 
-  const foundUser = await user.getUserByPublicKey(pubKey);
-console.log(signature);
+    const foundUser = await user.getUserByPublicKey(pubKey);
+  console.log(signature);
 
-  if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
-    res.status(403);
-    return res.send({error: 'auth error'});
+    if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status(403);
+      return res.send({error: 'auth error'});
+    }
+
+  console.log('sending back', foundUser);
+
+    res.send(foundUser);
+  } catch(err) {
+console.warn(err);
+    res.status(404);      
+    res.send({error: 'not found'});
   }
-
-console.log('sending back', foundUser);
-
-  res.send(foundUser);
 };
 
 const getNineum = async (req, res) => {
-  const uuid = req.params.uuid;
-  const timestamp = req.query.timestamp;
-  const signature = req.query.signature;
-  const message = timestamp + uuid;
+  try { 
+    const uuid = req.params.uuid;
+    const timestamp = req.query.timestamp;
+    const signature = req.query.signature;
+    const message = timestamp + uuid;
 
-  const foundUser = await user.getUser(uuid);
+    const foundUser = await user.getUser(uuid);
 
-  if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
-    res.status(403);
-    return res.send({error: 'auth error'});
+    if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
+      res.status(403);
+      return res.send({error: 'auth error'});
+    }
+
+    const nineum = await user.getNineum(foundUser);
+
+    res.send(nineum);
+  } catch(err) {
+console.warn(err);
+    res.status(404);      
+    res.send({error: 'not found'});
   }
-
-  const nineum = await user.getNineum(foundUser);
-
-  res.send(nineum);
 };
 
 const grantNineum = async (req, res) => {
