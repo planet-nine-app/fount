@@ -115,7 +115,7 @@ it('should resolve a spell', async () => {
   
   payload.casterSignature = await sessionless.sign(message);
 
-  const res = await post(`${baseURL}resolve`, payload);
+  const res = await post(`${baseURL}resolve/test`, payload);
   res.body.success.should.equal(true);
 });
 

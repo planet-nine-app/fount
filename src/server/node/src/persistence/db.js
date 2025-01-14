@@ -71,7 +71,7 @@ console.log('current nineum', currentNineum);
       if(!flavorMap[flavor]) {
         flavorMap[flavor] = 1;
       } else {
-        flavorMap++;
+        flavorMap[flavor]++;
       }
     });
     await client.set('flavorMap', JSON.stringify(flavorMap));
@@ -80,11 +80,14 @@ console.log('current nineum', currentNineum);
   },
 
   isGalaxyOpen: async (galaxy) => {
+    if(galaxy === '28880014') {
+      return true;
+    }
     const galaxyMapJSON = (await client.get('galaxyMap')) || '{}';
     const galaxyMap = JSON.parse(galaxyMapJSON);
 console.log(galaxyMap);
 console.log(galaxyMap[galaxy]);
-    return galaxyMap[galaxy];
+    return !!!galaxyMap[galaxy];
   },
  
   countForFlavorOfNineum: async (flavor) => {

@@ -119,8 +119,12 @@ const grantNineum = async (req, res) => {
     const texture = body.texture;
     const shape = body.shape;
     const quantity = body.quantity;
+    const signature = body.signature;
 
-    const message = timestamp + uuid + toUserUUID;
+    const flavor = charge + direction + rarity + size + texture + shape;
+
+    const message = timestamp + uuid + toUserUUID + flavor + quantity;
+console.log('message', message);
 
     const foundUser = await user.getUser(uuid);
 
@@ -134,11 +138,13 @@ const grantNineum = async (req, res) => {
       throw new Error('no to user found');
     }
 
+    const foundUserNineum = (await db.getNineum(foundUser)).nineum;
+
     const galacticNineum = foundUserNineum.filter(nineum => nineum.slice(14, 16) === 'ff');
     const adminNineum = foundUserNineum.filter(nineum => nineum.slice(14, 16) === 'fe');
     const isAllowed = (galacticNineum.length > 0 || adminNineum.length > 0);
     if(isAllowed) {
-      const galaxy = galacticNineum[0].slice(2, 10);
+      const galaxy = (galacticNineum.length >= adminNineum.length ? galacticNineum[0] : adminNineum[0]).slice(2, 10);
       const grantedNineum = await nineum.constructSpecificFlavorNineum(galaxy, charge, direction, rarity, size, texture, shape, quantity);
       await db.saveNineum(toUser, grantedNineum);
       const updatedToUser = await user.getUser(toUserUUID);
@@ -215,7 +221,7 @@ const grantGalacticNineum = async (req, res) => {
       return res.send({error: 'auth error'});
     }
 
-    const isGalaxyOpen = !(await db.isGalaxyOpen(galaxy));
+    const isGalaxyOpen = (await db.isGalaxyOpen(galaxy));
     if(isGalaxyOpen) {
       const galacticNineum = await nineum.constructGalacticNineum(galaxy);
       await db.saveNineum(foundUser, [galacticNineum]);

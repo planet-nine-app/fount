@@ -214,7 +214,7 @@ const nineum = {
     let ordinal = '';
   
     const charge = _charge || getOneFromSet(chargeSet);
-    const direction = _diretion || getOneFromSet(directionSet);
+    const direction = _direction || getOneFromSet(directionSet);
     const rarity = _rarity || getRarity();
     const size = _size || getOneFromSet(sizeSet);
     const texture = _texture || getOneFromSet(textureSet);
