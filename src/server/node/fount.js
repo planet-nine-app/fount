@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 
 const SUBDOMAIN = process.env.SUBDOMAIN || 'dev';
 bdo.baseURL = process.env.LOCALHOST ? 'http://localhost:3003/' : `${SUBDOMAIN}.bdo.allyabase.com/`;
-addie.baseURL = process.env.LOCALHOST ? 'http://localhost:3005/' : `${SUBDOMAIN}.bdo.allyabase.com/`;
+addie.baseURL = process.env.LOCALHOST ? 'http://localhost:3005/' : `${SUBDOMAIN}.addie.allyabase.com/`;
 
 const bdoHashInput = `${SUBDOMAIN}fount`;
 
