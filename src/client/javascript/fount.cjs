@@ -1,4 +1,6 @@
-import sessionless from 'sessionless-node';
+'use strict';
+
+var sessionless = require('sessionless-node');
 
 const get = async (url) => {
   return await fetch(url);
@@ -32,7 +34,7 @@ const fount = {
   baseURL: 'https://dev.fount.allyabase.com/',
 
   createUser: async (saveKeys, getKeys) => {
-    const keys = (await getKeys()) || (await sessionless.generateKeys(saveKeys, getKeys))
+    const keys = (await getKeys()) || (await sessionless.generateKeys(saveKeys, getKeys));
     sessionless.getKeys = getKeys;
 
     const payload = {
@@ -106,7 +108,7 @@ console.log(res);
     const signature = await sessionless.sign(message);
 
     const res = await get(`${fount.baseURL}user/${uuid}/nineum?timestamp=${timestamp}&signature=${signature}`);
-    const nineum = (await res.json()).nineum
+    const nineum = (await res.json()).nineum;
     return nineum;
   },
 
@@ -140,4 +142,4 @@ console.log(res);
   }
 };
 
-export default fount;
+module.exports = fount;
