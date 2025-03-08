@@ -19,8 +19,11 @@ function emit($item, item) {
 	  <p>You have ${user.nineumCount} nineum.</p>
 	  <br>
 	  <button id="grantButton">Grant</button>
+          <br>
+          <button id="transferButton">Transfer</button>
 	</div>`);
-       bind($item, item);
+
+     bind($item, item);
 
      return user;
   };
@@ -62,6 +65,11 @@ console.log('grant clicked');
       .then(user => fountUser = user)
       .then(_ => emit($item, item))
       .catch(err => console.warn('could not grant', err));
+  });
+
+  $item.find('#transferButton').click(function() {
+    const page = $item.parents('.page').data('data');
+console.log(page);
   });
 };
 

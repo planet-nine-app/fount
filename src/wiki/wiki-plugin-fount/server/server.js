@@ -3,6 +3,7 @@
 (function() {
 var fount = require('fount-js');
 var sessionless = require('sessionless-node');
+let fountUser;
 
 async function startServer(params) {
   const app = params.app;
@@ -35,6 +36,7 @@ console.log('getting called here');
 console.log('user is: ', user);
 
     uuid = user.uuid;
+    fountUser = user;
 
     res.send(user);
   });
@@ -53,7 +55,16 @@ console.log('user is: ', user);
     payload.casterSignature = await sessionless.sign(message);
 
     const resolution = await fount.resolve(payload);
+    if(resolution.success) {
+      const updatedUser = await fount.getUserByUUID(payload.casterUUID);
+      return res.send(updatedUser);
+    }
     res.send(resolution);
+  });
+
+  app.get('/plugin/fount/user/:pubKey', async function(req, res) {
+    fountUser = await fount.getUserByPublicKey(req.params.pubKey);
+    res.send(fountUser);
   });
 }
 
