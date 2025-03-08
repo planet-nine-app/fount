@@ -75,7 +75,7 @@ const fount = {
   },
 
   resolve: async (spell) => {
-    const res = await post(`${fount.baseURL}resolve`, spell);
+    const res = await post(`${fount.baseURL}resolve/${spell.spell}`, spell);
     const response = await res.json();
     return response;
   },

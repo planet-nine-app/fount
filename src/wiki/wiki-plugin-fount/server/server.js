@@ -38,6 +38,23 @@ console.log('user is: ', user);
 
     res.send(user);
   });
+
+  app.post('/plugin/fount/resolve', async function(req, res) {
+    const payload = req.body;
+    const message = JSON.stringify({
+      timestamp: payload.timestamp,
+      spell: payload.spell,
+      casterUUID: payload.casterUUID,
+      totalCost: payload.totalCost,
+      mp: payload.mp,
+      ordinal: payload.ordinal,
+    });
+
+    payload.casterSignature = await sessionless.sign(message);
+
+    const resolution = await fount.resolve(payload);
+    res.send(resolution);
+  });
 }
 
 module.exports = {startServer};
