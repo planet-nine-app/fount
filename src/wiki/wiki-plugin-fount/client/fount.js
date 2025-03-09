@@ -70,6 +70,45 @@ console.log('grant clicked');
   $item.find('#transferButton').click(function() {
     const page = $item.parents('.page').data('data');
 console.log(page);
+console.log(page.story.filter($ => $.type === 'signature2').map($ => $.signatures));
+    if(page && page.story) {
+      const signatures = page.story.filter($ => $.type === 'signature2').map($ => $.signatures);
+      signatures.forEach(entry => {
+        for(let domain in entry) {
+	  const encodedSite = encodeURIComponent(domain);
+  console.log('domain is', domain, 'and econdedSite is', encodedSite);
+
+	  fetch(`/plugin/signature2/owner-key?site=${encodedSite}`)
+	  .then(res => res.json())
+	  .then(domainKey => {
+	    const participant = entry[domain];
+console.log('participant', participant, 'has keys: ', domainKey);
+
+	    for(let hash in participant) {
+	      const signature = participant[hash];
+	      const message = signature.timestamp + signature.rev + signature.algo + signature.sum;
+console.log('verifying message: ', message);
+
+	      fetch(`/plugin/signature2/verify?signature=${signature.signature}&message=${message}&pubKey=${domainKey["public"]}`)
+	      .then(verified => !!verified)
+	      .then(verified => {
+console.log('verified', verified);
+		if(verified) {
+		  fetch(`http://${domain}/plugin/fount/user/${domainKey["public"]}`)
+                  .then(res => res.json())
+		  .then(user => {
+console.log('received user', user);
+  console.log('Ready to transfer to ', user.uuid);
+		  })
+		  .catch(console.warn);
+		}
+	      })
+	      .catch(console.warn);
+	    }
+	  })
+	}
+      });
+    }
   });
 };
 

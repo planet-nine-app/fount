@@ -64,6 +64,7 @@ console.log('user is: ', user);
 
   app.get('/plugin/fount/user/:pubKey', async function(req, res) {
     fountUser = await fount.getUserByPublicKey(req.params.pubKey);
+console.log('getting the user on the server, it looks like: ', fountUser);
     res.send(fountUser);
   });
 }
