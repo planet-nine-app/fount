@@ -97,6 +97,9 @@ console.log(galaxyMap[galaxy]);
   },
 
   transferNineum: async (sourceUser, destinationUser, nineumToTransfer) => {
+    if(sourceUser.uuid === destinationUser.uuid) {
+      return sourceUser;
+    }
     const sourceNineum = (await db.getNineum(sourceUser)).nineum;
     const destinationNineum = (await db.getNineum(destinationUser)).nineum;
   

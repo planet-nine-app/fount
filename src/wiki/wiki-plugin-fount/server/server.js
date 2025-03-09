@@ -34,6 +34,7 @@ console.log('getting called here');
       user = await fount.getUserByUUID(uuid);
     }
 console.log('user is: ', user);
+    user.nineum = await fount.getNineum(user.uuid);
 
     uuid = user.uuid;
     fountUser = user;
@@ -65,6 +66,19 @@ console.log('user is: ', user);
   app.get('/plugin/fount/user/:pubKey', async function(req, res) {
     fountUser = await fount.getUserByPublicKey(req.params.pubKey);
 console.log('getting the user on the server, it looks like: ', fountUser);
+    fountUser.nineum = await fount.getNineum(fountUser.uuid);
+    res.send(fountUser);
+  });
+
+  app.post('/plugin/fount/transfer', async function(req, res) {
+    const uuid = req.body.uuid;
+    const toUUID = req.body.toUUID;
+    const nineum = req.body.nineum;
+    const transferNineum = await fount.transferNineum(uuid, toUUID, nineum, 0, 'usd'); // priced transfers not supported yet
+console.log('response on server for transfer', transferNineum);
+    fountUser = await fount.getUserByPublicKey(req.params.pubKey);
+console.log('getting the user on the server, it looks like: ', fountUser);
+    fountUser.nineum = await fount.getNineum(fountUser.uuid);
     res.send(fountUser);
   });
 }
