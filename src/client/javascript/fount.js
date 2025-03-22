@@ -98,6 +98,18 @@ console.log(res);
     return user;
   },
 
+  grantNineum: async (uuid, destinationUUID, flavor) => {
+
+  },
+
+  grantAdminNineum: async (uuid, destinationUUID, flavor) => {
+
+  },
+
+  grantGalacticNineum: async (uuid, destinationUUID, flavor) => {
+
+  },
+
   getNineum: async (uuid) => {
     const timestamp = new Date().getTime() + '';
 
