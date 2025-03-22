@@ -51,7 +51,8 @@ console.log(JSON.parse(nineumString));
     return JSON.parse(nineumString);
   },
 
-  saveNineum: async (user, newNineum) => {
+  saveNineum: async (user, _newNineum) => {
+    const newNineum = _newNineum.map($ => $.toLowerCase());
     const currentNineum = (await db.getNineum(user)).nineum;
 console.log('current nineum', currentNineum);
     const allNineum = [...currentNineum, ...newNineum];

@@ -212,7 +212,8 @@ const grantGalacticNineum = async (req, res) => {
     const timestamp = body.timestamp;
     const galaxy = body.galaxy;
     const signature = body.signature;
-    const message = timestamp + uuid;
+    const message = timestamp + uuid + galaxy;
+console.log('message for galactic: ', message);
 
     const foundUser = await user.getUser(uuid);
 

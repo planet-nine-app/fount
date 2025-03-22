@@ -5,24 +5,28 @@ should();
 
 console.log(fount);
 
+fount.baseURL = 'http://localhost:3006/';
+
 let savedUser = {};
 let savedUser2 = {};
 let keys = {};
 let keys2 = {};
-let keysToReturn = {};
+let keysToReturn;
 const hash = 'firstHash';
 const secondHash = 'secondHash';
 
 it('should register a user', async () => {
-  const uuid = await fount.createUser((k) => { keysToReturn = k; }, () => { return keysToReturn; });
-  savedUser.uuid = uuid;
+  const user = await fount.createUser((k) => { keysToReturn = k; }, () => { return keysToReturn; });
+  savedUser = user;
+console.log('savedUser from register', savedUser);
   savedUser.uuid.length.should.equal(36);
   keys = keysToReturn;
+  keysToReturn = undefined;
 });
 
 it('should register another user', async () => {
-  const uuid = await fount.createUser((k) => { keysToReturn = k; }, () => { return keysToReturn; });
-  savedUser2.uuid = uuid;
+  const user = await fount.createUser((k) => { keysToReturn = k; }, () => { return keysToReturn; });
+  savedUser2 = user;
   savedUser2.uuid.length.should.equal(36);
   keys2 = keysToReturn;
   keysToReturn = keys;
@@ -51,9 +55,10 @@ it('should resolve a spell', async () => {
 
   const message = payload.timestamp + payload.spell + payload.casterUUID + payload.totalCost + payload.mp + payload.ordinal;
 
-console.log(keys);
+/*console.log(keys);
   sessionless.getKeys = () => { return keys; };
-console.log(sessionless.getKeys());
+console.log(sessionless.getKeys());*/
+  await sessionless.generateKeys(() => {}, () => keys);
   payload.casterSignature = await sessionless.sign(message);
 
   const res = await fount.resolve(payload);
@@ -70,6 +75,27 @@ it('should grant experience', async () => {
 
 console.log('grant saved user', savedUser);
   savedUser.experiencePool.should.equal(200);
+});
+
+it('should grant galactic nineum', async () => {
+console.log('in galactic, and keys are: ', keys);
+console.log('and getKeys is: ', sessionless.getKeys());
+  const user = await fount.grantGalacticNineum(savedUser.uuid, savedUser2.uuid, '01234567');
+console.log('galactic user', user);
+  user.experiencePool.should.equal(200);
+});
+
+it('should grant admin nineum', async () => {
+  const user = await fount.grantAdminNineum(savedUser.uuid, savedUser2.uuid);
+console.log('admin user', user);
+  user.experiencePool.should.equal(200);
+});
+
+it('should grant nineum', async () => {
+  const flavor = '24071209a3b3';
+  const user = await fount.grantNineum(savedUser.uuid, savedUser2.uuid, flavor);
+console.log('nineum user', user);
+  user.experiencePool.should.equal(200);
 });
 
 it('should get nineum', async () => {

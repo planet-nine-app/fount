@@ -99,15 +99,63 @@ console.log(res);
   },
 
   grantNineum: async (uuid, destinationUUID, flavor) => {
+    const payload = {
+      timestamp: new Date().getTime(),
+      toUserUUID: destinationUUID,
+      charge: flavor.slice(0, 2),
+      direction: flavor.slice(2, 4),
+      rarity: flavor.slice(4, 6),
+      size: flavor.slice(6, 8),
+      texture: flavor.slice(8, 10),
+      shape: flavor.slice(10, 12),
+      quantity: 1
+    };
 
+//    const flavor = payload.charge + payload.direction + payload.rarity + payload.size + payload.texture + payload.shape;
+
+    const message = timestamp + uuid + payload.toUserUUID + flavor + payload.quantity;
+
+    payload.signature = await sessionless.sign(message);
+
+    const res = await put(`${fount.baseURL}user/${uuid}/nineum`, payload);
+console.log(res);
+    const user = await res.json();
+    return user;
   },
 
-  grantAdminNineum: async (uuid, destinationUUID, flavor) => {
+  grantAdminNineum: async (uuid, destinationUUID) => {
+    const payload = {
+      timestamp: new Date().getTime() + '',
+      toUserUUID: destinationUUID
+    };
 
+    const message = payload.timestamp + uuid;
+   
+    payload.signature = await sessionless.sign(message);
+
+    const res = await put(`${fount.baseURL}user/${uuid}/nineum/admin`, payload);
+console.log(res);
+    const user = await res.json();
+    return user;
   },
 
-  grantGalacticNineum: async (uuid, destinationUUID, flavor) => {
+  grantGalacticNineum: async (uuid, destinationUUID, galaxy) => {
+console.log('got galaxy', galaxy);
+    const payload = {
+      timestamp: new Date().getTime() + '',
+      toUserUUID: destinationUUID,
+      galaxy
+    };
+console.log('payload to send is', payload);
+    const message = payload.timestamp + uuid + galaxy;
+console.log('message for galactic is', message);
+   
+    payload.signature = await sessionless.sign(message);
 
+    const res = await put(`${fount.baseURL}user/${uuid}/nineum/galactic`, payload);
+console.log(res);
+    const user = await res.json();
+    return user;
   },
 
   getNineum: async (uuid) => {
