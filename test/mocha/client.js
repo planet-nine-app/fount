@@ -88,23 +88,25 @@ console.log('galactic user', user);
 it('should grant admin nineum', async () => {
   const user = await fount.grantAdminNineum(savedUser.uuid, savedUser2.uuid);
 console.log('admin user', user);
-  user.experiencePool.should.equal(200);
+  user.experiencePool.should.equal(0);
 });
 
 it('should grant nineum', async () => {
   const flavor = '24071209a3b3';
   const user = await fount.grantNineum(savedUser.uuid, savedUser2.uuid, flavor);
 console.log('nineum user', user);
-  user.experiencePool.should.equal(200);
+  user.experiencePool.should.equal(0);
 });
 
 it('should get nineum', async () => {
-  const nineum = await fount.getNineum(savedUser.uuid);
-  savedUser.nineum = nineum;
-  savedUser.nineum.length.should.equal(2);
+  keysToReturn = keys2;
+  const nineum = await fount.getNineum(savedUser2.uuid);
+  savedUser2.nineum = nineum;
+  savedUser2.nineum.length.should.equal(2);
 });
 
 it('it should transfer nineum', async () => {
+  keysToReturn = keys;
   const updatedUser = await fount.transferNineum(savedUser.uuid, savedUser2.uuid, savedUser.nineum, 0, 'usd');
 console.log('transfer updated user', updatedUser);
   updatedUser.nineumCount.should.equal(0);

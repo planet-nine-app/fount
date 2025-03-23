@@ -75,6 +75,11 @@ console.log('current nineum', currentNineum);
         flavorMap[flavor]++;
       }
     });
+    
+    user.nineumCount = newNineum.count;
+    await saveUser(user);    
+
+    await client.set('galaxyMap', JSON.stringify(galaxyMap));
     await client.set('flavorMap', JSON.stringify(flavorMap));
 
     return true;

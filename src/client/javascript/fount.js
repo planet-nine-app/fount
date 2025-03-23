@@ -100,7 +100,7 @@ console.log(res);
 
   grantNineum: async (uuid, destinationUUID, flavor) => {
     const payload = {
-      timestamp: new Date().getTime(),
+      timestamp: new Date().getTime() + '',
       toUserUUID: destinationUUID,
       charge: flavor.slice(0, 2),
       direction: flavor.slice(2, 4),
@@ -113,7 +113,7 @@ console.log(res);
 
 //    const flavor = payload.charge + payload.direction + payload.rarity + payload.size + payload.texture + payload.shape;
 
-    const message = timestamp + uuid + payload.toUserUUID + flavor + payload.quantity;
+    const message = payload.timestamp + uuid + payload.toUserUUID + flavor + payload.quantity;
 
     payload.signature = await sessionless.sign(message);
 
