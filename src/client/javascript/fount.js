@@ -139,11 +139,10 @@ console.log(res);
     return user;
   },
 
-  grantGalacticNineum: async (uuid, destinationUUID, galaxy) => {
+  grantGalacticNineum: async (uuid, galaxy) => {
 console.log('got galaxy', galaxy);
     const payload = {
       timestamp: new Date().getTime() + '',
-      toUserUUID: destinationUUID,
       galaxy
     };
 console.log('payload to send is', payload);

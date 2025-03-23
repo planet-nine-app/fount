@@ -80,7 +80,7 @@ console.log('grant saved user', savedUser);
 it('should grant galactic nineum', async () => {
 console.log('in galactic, and keys are: ', keys);
 console.log('and getKeys is: ', sessionless.getKeys());
-  const user = await fount.grantGalacticNineum(savedUser.uuid, savedUser2.uuid, '28880014');
+  const user = await fount.grantGalacticNineum(savedUser.uuid, '28880014');
 console.log('galactic user', user);
   user.experiencePool.should.equal(200);
 });
