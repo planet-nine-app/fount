@@ -1,6 +1,6 @@
 {
   "name": "fount-js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "JavaScript client for Fount",
   "main": "fount.js",
   "scripts": {
