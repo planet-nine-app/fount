@@ -107,6 +107,8 @@ it('should get nineum', async () => {
 
 it('it should transfer nineum', async () => {
   keysToReturn = keys;
+  const nineum = await fount.getNineum(savedUser.uuid);
+  savedUser.nineum = nineum;
   const updatedUser = await fount.transferNineum(savedUser.uuid, savedUser2.uuid, savedUser.nineum, 0, 'usd');
 console.log('transfer updated user', updatedUser);
   updatedUser.nineumCount.should.equal(0);

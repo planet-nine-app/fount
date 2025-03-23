@@ -230,7 +230,7 @@ const nineum = {
 
     let constructed = [];
     for(var i = 0; i < quantity; i++) {
-      constructed.push(universe + galaxy + flavor + year + (flavorCount + i + 1));
+      constructed.push(universe + galaxy + flavor + year + zeroPad(flavorCount + i + 1));
     }
 
     return constructed;
