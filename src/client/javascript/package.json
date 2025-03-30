@@ -11,6 +11,10 @@
     "type": "git",
     "url": "git+https://github.com/planet-nine-app/fount.git"
   },
+  "exports": {
+    "import": "./fount.js",
+    "require": "./fount.cjs"
+  },
   "type": "module",
   "author": "planetnineisaspaceship",
   "license": "MIT",

@@ -22,6 +22,8 @@ import bdo from 'bdo-js';
 import addie from 'addie-js';
 import spellbook from './spellbooks/spellbook.js';
 
+console.log('spellbook:', JSON.stringify(spellbook));
+
 const allowedTimeDifference = 300000; // keep this relaxed for now
 
 const app = express();
