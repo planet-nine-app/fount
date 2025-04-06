@@ -19,6 +19,13 @@ const putUser =  async (req, res) => {
       return res.send({error: 'auth error'});
     }
 
+    try {
+      const maybeUser = await user.getUserByPublicKey(pubKey);
+      res.send(maybeUser);
+    } catch(err) {
+console.warn(err);
+    }
+
     const newUser = req.body.user || { pubKey };
 
     const foundUser = await user.putUser(newUser, pubKey);

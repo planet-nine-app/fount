@@ -1,9 +1,11 @@
 'use strict';
 
 (function() {
-var fount = require('fount-js');
+var _fount = require('fount-js');
 var sessionless = require('sessionless-node');
 let fountUser;
+
+const fount = _fount.default;
 
 async function startServer(params) {
   const app = params.app;
@@ -20,6 +22,7 @@ async function startServer(params) {
   const getKeys = () => fountKeys;
 
   await sessionless.generateKeys(saveKeys, getKeys);
+  await fount.createUser(saveKeys, getKeys);
 
   app.get('/plugin/fount/user', async function(req, res) {
 console.log('getting called here');
@@ -27,6 +30,7 @@ console.log('getting called here');
 
     if(!uuid) {
       user = await fount.getUserByPublicKey(fountKeys.pubKey);
+console.log('user looks like', user);
       if(!user || !user.uuid) {
         user = await fount.createUser(saveKeys, getKeys);   
       }

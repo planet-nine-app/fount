@@ -20,6 +20,6 @@
     "rollup": "^4.34.9"
   },
   "dependencies": {
-    "fount-js": "^0.0.3"
+    "fount-js": "latest"
   }
 }
