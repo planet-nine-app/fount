@@ -6,6 +6,7 @@ var sessionless = require('sessionless-node');
 let fountUser;
 
 const fount = _fount.default;
+fount.baseURL = 'http://127.0.0.1:3006/';
 
 async function startServer(params) {
   const app = params.app;

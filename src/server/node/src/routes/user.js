@@ -21,7 +21,7 @@ const putUser =  async (req, res) => {
 
     try {
       const maybeUser = await user.getUserByPublicKey(pubKey);
-      res.send(maybeUser);
+      return res.send(maybeUser);
     } catch(err) {
 console.warn(err);
     }
