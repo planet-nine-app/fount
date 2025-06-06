@@ -90,9 +90,11 @@ console.log('foundUser', foundUser);
   },
 
   putUser: async (newUser, pubKey) => {
+console.log('called put user');
     newUser.mp = maxMPAndRegenerationRate.maxMP;
     newUser.maxMP = maxMPAndRegenerationRate.maxMP;
     newUser.lastMPUsed = new Date().getTime();
+console.log('in putUser after mp');
 
     newUser.experience = 0;
     newUser.lastExperienceCalculated = new Date().getTime();
@@ -100,7 +102,12 @@ console.log('foundUser', foundUser);
 
     newUser.nineumCount = 0;
     newUser.ordinal = 0;
+try {
     const uuid = await db.putUser(newUser, pubKey);
+} catch(err) {
+console.error(err);
+console.log('it\'s failing here');
+}
 
     newUser.uuid = uuid;
 console.log('In fount, the new user looks like: ', newUser);
