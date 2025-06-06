@@ -103,6 +103,7 @@ console.log('foundUser', foundUser);
     const uuid = await db.putUser(newUser, pubKey);
 
     newUser.uuid = uuid;
+console.log('In fount, the new user looks like: ', newUser);
 
     return newUser;
   },
