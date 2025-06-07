@@ -104,15 +104,17 @@ console.log('in putUser after mp');
     newUser.ordinal = 0;
 try {
     const uuid = await db.putUser(newUser, pubKey);
-} catch(err) {
-console.error(err);
-console.log('it\'s failing here');
-}
 
     newUser.uuid = uuid;
 console.log('In fount, the new user looks like: ', newUser);
 
     return newUser;
+} catch(err) {
+console.error(err);
+console.log('it\'s failing here');
+}
+
+
   },
 
   saveUser: async (userToSave) => {
