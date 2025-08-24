@@ -3,6 +3,21 @@ const SUBDOMAIN = process.env.SUBDOMAIN || 'dev';
 
 export default {
   spellbookName: 'allyabase',
+  spellTest: {
+    cost: 400,
+    destinations: [
+	{
+	    stopName: 'test-server',
+	    stopURL: 'http://127.0.0.1:3456/magic/spell/'
+	},
+	{
+	    stopName: 'fount',
+	    stopURL: fountUrl + 'magic/spell/'
+	}
+    ],
+    resolver: 'fount',
+    mp: true
+  },
   joinup: {
     cost: 400,
     destinations: [
