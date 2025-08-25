@@ -12,7 +12,7 @@ export default {
 	},
 	{
 	    stopName: 'fount',
-	    stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/` + 'magic/spell/'
+	    stopURL: 'http://127.0.0.1:5117/resolve/'
 	}
     ],
     resolver: 'fount',
