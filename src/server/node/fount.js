@@ -1,5 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import { createHash } from 'node:crypto';
 import { 
   putUser, 
@@ -29,6 +34,15 @@ const allowedTimeDifference = 300000; // keep this relaxed for now
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from public directory with proper MIME types
+app.use(express.static(path.join(__dirname, '../../../public'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 app.use((req, res, next) => {
   const requestTime = +req.query.timestamp || +req.body.timestamp;
@@ -100,4 +114,6 @@ app.post('/user/:uuid/transfer', transfer);
 app.post('/user/:uuid/grant', grant);
 
 app.listen(3006);
-console.log('hit me!');
+console.log('🚀 Fount server running on port 3006');
+console.log('📁 Serving static files from public directory');
+console.log('🪄 castSpell.js available at: http://localhost:3006/castSpell.js');
