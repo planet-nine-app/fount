@@ -10,6 +10,22 @@
  * - Include this script on any web page: <script src="http://your-fount-server/castSpell.js"></script>
  * - Add spell attributes to SVG elements: <rect spell="fireball" spell-components='{"damage": 10}' />
  * - Elements with spell attributes will become interactive automatically
+ * 
+ * BDO Bridge Interface:
+ * For actual card navigation (vs simulation), provide a bridge object:
+ * 
+ * window.castSpellBridge = {
+ *   getCardFromBDO: async (bdoPubKey) => {
+ *     // Fetch card from BDO with proper authentication
+ *     // Return: { success: true, data: cardContent } or { success: false, error: errorMessage }
+ *   }
+ * };
+ * 
+ * The bridge handles:
+ * - Message signing for BDO authentication
+ * - Card retrieval from BDO servers
+ * - Error handling for network/auth failures
+ * - Card content parsing and validation
  */
 
 (function() {
@@ -575,14 +591,46 @@
             element.style.backgroundColor = '#3498db';
         }
         
-        // In a real implementation, this would:
-        // 1. Fetch the card from BDO using the pubKey
-        // 2. Display the new card
-        // 3. Update browser history/navigation
-        // 4. Apply spell handlers to the new card content
-        
-        // For now, simulate the navigation
-        console.log(`🔍 Fetching card from BDO: ${bdoPubKey}`);
+        // Check if BDO bridge is available (provided by The Advancement or MagiCard)
+        if (window.castSpellBridge && typeof window.castSpellBridge.getCardFromBDO === 'function') {
+            console.log(`🌉 BDO bridge available, fetching real card from BDO: ${bdoPubKey}`);
+            
+            try {
+                const cardData = await window.castSpellBridge.getCardFromBDO(bdoPubKey);
+                if (cardData && cardData.success) {
+                    console.log(`✅ Card fetched successfully:`, cardData);
+                    
+                    // Dispatch event with actual card data
+                    window.dispatchEvent(new CustomEvent('cardNavigationComplete', {
+                        detail: {
+                            bdoPubKey: bdoPubKey,
+                            cardData: cardData.data,
+                            timestamp: new Date().toISOString(),
+                            navigationSource: element.getAttribute('spell')
+                        }
+                    }));
+                    
+                    showCustomDialog({
+                        title: '🧭 Card Retrieved',
+                        message: `Successfully loaded card: ${bdoPubKey.substring(0, 8)}...`,
+                        details: [
+                            `Card fetched from BDO`,
+                            `Data size: ${JSON.stringify(cardData.data).length} characters`,
+                            `Navigation source: ${element.getAttribute('spell')}`
+                        ],
+                        type: 'success'
+                    });
+                    
+                    return; // Exit early - real navigation handled by bridge
+                } else {
+                    console.warn(`❌ BDO bridge returned error:`, cardData);
+                }
+            } catch (error) {
+                console.warn(`❌ BDO bridge failed:`, error);
+            }
+        } else {
+            console.log(`🔍 No BDO bridge available, using simulation mode`);
+        }
         
         // Dispatch navigation event for any listeners
         window.dispatchEvent(new CustomEvent('cardNavigation', {
