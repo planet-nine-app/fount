@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>castSpell.js Demo - Magistack Selection System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .demo-section h2 {
+            margin-top: 0;
+            color: #f1c40f;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .magistack-status {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-debug {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .spell-demo {
+            margin: 20px 0;
+        }
+        
+        .spell-element {
+            transition: all 0.3s ease;
+        }
+        
+        .spell-element:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🪄 castSpell.js Demo</h1>
+        <p>Interactive spell casting with magistack selection system</p>
+    </div>
+    
+    <div class="demo-container">
+        <!-- Selection Spells Demo -->
+        <div class="demo-section">
+            <h2>📦 Selection Spells (Magistack)</h2>
+            <p>Click elements below to add selections to your magistack. Selections persist until page refresh.</p>
+            
+            <div class="spell-demo">
+                <h3>🍎 Food Selection Menu</h3>
+                <svg width="300" height="200" viewBox="0 0 300 200">
+                    <!-- Apple Selection -->
+                    <rect spell="selection" 
+                          spell-components='{"item": "apple", "category": "fruit", "price": 1.50, "nutrition": {"calories": 95, "fiber": 4}}'
+                          x="20" y="30" width="80" height="30" rx="5" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                    <text spell="selection" 
+                          spell-components='{"item": "apple", "category": "fruit", "price": 1.50, "nutrition": {"calories": 95, "fiber": 4}}'
+                          x="60" y="50" text-anchor="middle" fill="white" font-weight="bold">🍎 Apple</text>
+                    
+                    <!-- Banana Selection -->
+                    <rect spell="selection" 
+                          spell-components='{"item": "banana", "category": "fruit", "price": 0.75, "nutrition": {"calories": 105, "potassium": 422}}'
+                          x="120" y="30" width="80" height="30" rx="5" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/>
+                    <text spell="selection" 
+                          spell-components='{"item": "banana", "category": "fruit", "price": 0.75, "nutrition": {"calories": 105, "potassium": 422}}'
+                          x="160" y="50" text-anchor="middle" fill="#333" font-weight="bold">🍌 Banana</text>
+                    
+                    <!-- Carrot Selection -->
+                    <rect spell="selection" 
+                          spell-components='{"item": "carrot", "category": "vegetable", "price": 0.50, "nutrition": {"calories": 25, "vitamin_a": 100}}'
+                          x="20" y="80" width="80" height="30" rx="5" fill="#e67e22" stroke="#d35400" stroke-width="2"/>
+                    <text spell="selection" 
+                          spell-components='{"item": "carrot", "category": "vegetable", "price": 0.50, "nutrition": {"calories": 25, "vitamin_a": 100}}'
+                          x="60" y="100" text-anchor="middle" fill="white" font-weight="bold">🥕 Carrot</text>
+                    
+                    <!-- Bread Selection -->
+                    <rect spell="selection" 
+                          spell-components='{"item": "bread", "category": "grain", "price": 2.25, "nutrition": {"calories": 80, "carbs": 15}}'
+                          x="120" y="80" width="80" height="30" rx="5" fill="#8e44ad" stroke="#9b59b6" stroke-width="2"/>
+                    <text spell="selection" 
+                          spell-components='{"item": "bread", "category": "grain", "price": 2.25, "nutrition": {"calories": 80, "carbs": 15}}'
+                          x="160" y="100" text-anchor="middle" fill="white" font-weight="bold">🍞 Bread</text>
+                    
+                    <!-- Complex Selection with nested data -->
+                    <rect spell="selection" 
+                          spell-components='{"item": "combo_meal", "category": "prepared", "price": 8.99, "contents": [{"item": "sandwich", "ingredients": ["turkey", "cheese", "lettuce"]}, {"item": "chips", "flavor": "salt_vinegar"}, {"item": "drink", "size": "medium", "type": "soda"}], "dietary": {"vegetarian": false, "calories": 650}}'
+                          x="70" y="130" width="120" height="40" rx="8" fill="#2ecc71" stroke="#27ae60" stroke-width="3"/>
+                    <text spell="selection" 
+                          spell-components='{"item": "combo_meal", "category": "prepared", "price": 8.99, "contents": [{"item": "sandwich", "ingredients": ["turkey", "cheese", "lettuce"]}, {"item": "chips", "flavor": "salt_vinegar"}, {"item": "drink", "size": "medium", "type": "soda"}], "dietary": {"vegetarian": false, "calories": 650}}'
+                          x="130" y="155" text-anchor="middle" fill="white" font-weight="bold">🍽️ Combo Meal</text>
+                    
+                    <!-- Selection WITH Navigation (new feature!) -->
+                    <rect spell="selection" 
+                          spell-components='{"item": "premium_pizza", "category": "prepared", "price": 12.99, "bdoPubKey": "demo_user_dessert_menu_v1", "toppings": ["pepperoni", "mushrooms", "extra_cheese"]}'
+                          x="210" y="130" width="80" height="40" rx="8" fill="#e67e22" stroke="#d35400" stroke-width="3">
+                        <animate attributeName="fill" values="#e67e22;#f39c12;#e67e22" dur="2s" repeatCount="indefinite"/>
+                    </rect>
+                    <text spell="selection" 
+                          spell-components='{"item": "premium_pizza", "category": "prepared", "price": 12.99, "bdoPubKey": "demo_user_dessert_menu_v1", "toppings": ["pepperoni", "mushrooms", "extra_cheese"]}'
+                          x="250" y="155" text-anchor="middle" fill="white" font-weight="bold" font-size="12">🍕 Pizza→</text>
+                </svg>
+            </div>
+            
+            <div class="magistack-status" id="magistack-status">
+                <strong>📦 Magistack Status:</strong>
+                <div id="selection-count">0 selections</div>
+                <div id="selection-list"></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-debug" onclick="castSpellDebug.logStatus()">🔍 Debug Status</button>
+                <button class="btn btn-clear" onclick="clearMagistack()">🗑️ Clear All</button>
+            </div>
+        </div>
+        
+        <!-- Magicard Navigation Demo -->
+        <div class="demo-section">
+            <h2>🃏 Magicard Navigation</h2>
+            <p>Click elements to simulate navigation between cards using BDO pubKeys.</p>
+            
+            <div class="spell-demo">
+                <h3>🔥 Spell Card Navigation</h3>
+                <svg width="300" height="300" viewBox="0 0 300 300">
+                    <!-- Fire Card Navigation -->
+                    <rect spell="magicard" 
+                          spell-components='{"bdoPubKey": "demo_user_fire_spell_v1", "cardType": "spell", "element": "fire"}'
+                          x="50" y="30" width="200" height="60" rx="10" fill="#e74c3c" stroke="#c0392b" stroke-width="3">
+                        <animate attributeName="fill" values="#e74c3c;#f39c12;#e74c3c" dur="3s" repeatCount="indefinite"/>
+                    </rect>
+                    <text spell="magicard" 
+                          spell-components='{"bdoPubKey": "demo_user_fire_spell_v1", "cardType": "spell", "element": "fire"}'
+                          x="150" y="65" text-anchor="middle" fill="white" font-size="18" font-weight="bold">🔥 Fire Spell Card</text>
+                    
+                    <!-- Ice Card Navigation -->
+                    <rect spell="magicard" 
+                          spell-components='{"bdoPubKey": "demo_user_ice_spell_v1", "cardType": "spell", "element": "ice"}'
+                          x="50" y="110" width="200" height="60" rx="10" fill="#3498db" stroke="#2980b9" stroke-width="3">
+                        <animate attributeName="fill" values="#3498db;#85c1e9;#3498db" dur="4s" repeatCount="indefinite"/>
+                    </rect>
+                    <text spell="magicard" 
+                          spell-components='{"bdoPubKey": "demo_user_ice_spell_v1", "cardType": "spell", "element": "ice"}'
+                          x="150" y="145" text-anchor="middle" fill="white" font-size="18" font-weight="bold">❄️ Ice Spell Card</text>
+                    
+                    <!-- Lightning Card Navigation -->
+                    <rect spell="magicard" 
+                          spell-components='{"bdoPubKey": "demo_user_lightning_spell_v1", "cardType": "spell", "element": "lightning"}'
+                          x="50" y="190" width="200" height="60" rx="10" fill="#9b59b6" stroke="#8e44ad" stroke-width="3">
+                        <animate attributeName="fill" values="#9b59b6;#bb8fce;#9b59b6" dur="2s" repeatCount="indefinite"/>
+                    </rect>
+                    <text spell="magicard" 
+                          spell-components='{"bdoPubKey": "demo_user_lightning_spell_v1", "cardType": "spell", "element": "lightning"}'
+                          x="150" y="225" text-anchor="middle" fill="white" font-size="18" font-weight="bold">⚡ Lightning Card</text>
+                </svg>
+                
+                <h3>🧪 MAGIC Protocol Test</h3>
+                <svg width="300" height="100" viewBox="0 0 300 100">
+                    <!-- spellTest for MAGIC protocol -->
+                    <rect spell="spellTest" 
+                          x="50" y="20" width="200" height="60" rx="10" fill="#f1c40f" stroke="#f39c12" stroke-width="3">
+                        <animate attributeName="fill" values="#f1c40f;#e67e22;#f1c40f" dur="1.5s" repeatCount="indefinite"/>
+                    </rect>
+                    <text spell="spellTest" 
+                          x="150" y="55" text-anchor="middle" fill="#333" font-size="16" font-weight="bold">🧪 MAGIC spellTest</text>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Generic Spell Demo -->
+        <div class="demo-section">
+            <h2>⚡ Generic Spells</h2>
+            <p>Examples of other spell types that fall back to generic handling.</p>
+            
+            <div class="spell-demo">
+                <svg width="300" height="200" viewBox="0 0 300 200">
+                    <!-- Custom spell types -->
+                    <circle spell="heal" 
+                            spell-components='{"power": 50, "type": "restoration", "mana_cost": 25}'
+                            cx="80" cy="60" r="30" fill="#2ecc71" stroke="#27ae60" stroke-width="3"/>
+                    <text spell="heal" 
+                          spell-components='{"power": 50, "type": "restoration", "mana_cost": 25}'
+                          x="80" y="67" text-anchor="middle" fill="white" font-weight="bold">💚 Heal</text>
+                    
+                    <polygon spell="shield" 
+                             spell-components='{"defense": 75, "duration": 60, "type": "protective"}'
+                             points="220,30 250,45 250,75 220,90 190,75 190,45" fill="#3498db" stroke="#2980b9" stroke-width="3"/>
+                    <text spell="shield" 
+                          spell-components='{"defense": 75, "duration": 60, "type": "protective"}'
+                          x="220" y="67" text-anchor="middle" fill="white" font-weight="bold">🛡️</text>
+                    
+                    <rect spell="teleport" 
+                          spell-components='{"destination": "crystal_cave", "distance": 500, "accuracy": 0.95}'
+                          x="70" y="130" width="160" height="40" rx="20" fill="#9b59b6" stroke="#8e44ad" stroke-width="3"/>
+                    <text spell="teleport" 
+                          spell-components='{"destination": "crystal_cave", "distance": 500, "accuracy": 0.95}'
+                          x="150" y="155" text-anchor="middle" fill="white" font-weight="bold">🌀 Teleport</text>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- System Information -->
+        <div class="demo-section">
+            <h2>ℹ️ System Information</h2>
+            <p><strong>castSpell.js</strong> is now served from the fount microservice at <code>http://localhost:3006/castSpell.js</code></p>
+            
+            <h3>Key Features:</h3>
+            <ul>
+                <li><strong>Selection Spells:</strong> Add items to in-memory magistack collection</li>
+                <li><strong>Selection + Navigation:</strong> Selection spells can also navigate to next card with bdoPubKey</li>
+                <li><strong>Magicard Navigation:</strong> Navigate between cards using BDO pubKeys</li>
+                <li><strong>MAGIC Protocol:</strong> Integration with The Advancement extension</li>
+                <li><strong>Auto-Detection:</strong> Automatically finds and enhances spell elements</li>
+                <li><strong>Visual Feedback:</strong> Hover effects and click animations</li>
+            </ul>
+            
+            <h3>Console Commands:</h3>
+            <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; font-size: 12px;">
+castSpellDebug.logStatus()     // Show current status
+castSpellDebug.getSelections() // Get all selections
+castSpellDebug.clearSelections() // Clear magistack
+castSpell(element)             // Cast spell manually
+applySpellHandlers()           // Re-scan for spells</pre>
+            
+            <div class="controls">
+                <button class="btn btn-debug" onclick="openConsole()">🔧 Open Browser Console</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load castSpell.js from fount server -->
+    <script src="castSpell.js"></script>
+    
+    <script>
+        // Update magistack status display
+        function updateMagistackStatus() {
+            const selections = getMagistackSelections();
+            const countElement = document.getElementById('selection-count');
+            const listElement = document.getElementById('selection-list');
+            
+            countElement.textContent = `${selections.length} selections`;
+            
+            if (selections.length > 0) {
+                listElement.innerHTML = '<strong>Recent:</strong> ' + 
+                    selections.slice(-3).map(s => s.item || s.bdoPubKey || 'Unknown').join(', ');
+            } else {
+                listElement.innerHTML = '<em>No selections yet</em>';
+            }
+        }
+        
+        // Clear magistack with confirmation
+        function clearMagistack() {
+            if (confirm('Clear all magistack selections?')) {
+                clearMagistackSelections();
+                updateMagistackStatus();
+            }
+        }
+        
+        // Open browser console tip
+        function openConsole() {
+            alert('Open browser console:\\n\\nChrome/Safari: Cmd+Option+I (Mac) or F12 (Windows)\\nFirefox: Cmd+Option+K (Mac) or F12 (Windows)\\n\\nThen try: castSpellDebug.logStatus()');
+        }
+        
+        // Listen for magistack events
+        window.addEventListener('magistackSelectionAdded', (event) => {
+            console.log('🎯 Selection added event:', event.detail);
+            updateMagistackStatus();
+        });
+        
+        window.addEventListener('magistackSelectionsCleared', (event) => {
+            console.log('🗑️ Selections cleared event:', event.detail);
+            updateMagistackStatus();
+        });
+        
+        // Initialize display
+        updateMagistackStatus();
+        
+        // Welcome message
+        console.log('🪄 castSpell.js Demo loaded!');
+        console.log('📦 Try clicking the selection elements to build your magistack');
+        console.log('🃏 Click magicard elements to test BDO navigation');
+        console.log('🔧 Selection spells can also navigate if they include bdoPubKey');
+        console.log('🔧 Use castSpellDebug.logStatus() to see current state');
+    </script>
+</body>
+</html>
