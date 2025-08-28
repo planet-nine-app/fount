@@ -162,8 +162,11 @@
             // Handle different spell types
             switch (spellType) {
                 case 'selection':
+                    console.log('🎯 Starting selection spell handler...');
                     await handleSelectionSpell(spellComponents, element);
+                    console.log('✅ Selection spell handler completed, starting magicard handler...');
                     await handleMagicardSpell(spellComponents, element);
+                    console.log('✅ Both selection and magicard handlers completed');
                     break;
                     
                 case 'magicard':
@@ -254,12 +257,15 @@
      */
     async function handleMagicardSpell(components, element) {
         console.log('🃏 Handling magicard navigation spell:', components);
+        console.log('🔍 bdoPubKey check:', components ? components.bdoPubKey : 'components is null');
         
         if (!components || !components.bdoPubKey) {
+            console.log('❌ Magicard navigation skipped - no bdoPubKey found');
             throw new Error('Magicard spell requires spell-components with bdoPubKey');
         }
         
         const { bdoPubKey } = components;
+        console.log('🚀 About to call navigateToCard with bdoPubKey:', bdoPubKey);
         await navigateToCard(bdoPubKey, element);
         
         console.log('🧭 Magicard navigation spell completed');
