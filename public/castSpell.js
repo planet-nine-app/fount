@@ -615,7 +615,7 @@
                         message: `Successfully loaded card: ${bdoPubKey.substring(0, 8)}...`,
                         details: [
                             `Card fetched from BDO`,
-                            `Data size: ${JSON.stringify(cardData.data).length} characters`,
+                            `Data size: ${cardData.data ? JSON.stringify(cardData.data).length : 'N/A'} characters`,
                             `Navigation source: ${element.getAttribute('spell')}`
                         ],
                         type: 'success'
