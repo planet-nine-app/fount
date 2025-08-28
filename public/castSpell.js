@@ -163,6 +163,7 @@
             switch (spellType) {
                 case 'selection':
                     await handleSelectionSpell(spellComponents, element);
+                    await handleMagicardSpell(spellComponents, element);
                     break;
                     
                 case 'magicard':
