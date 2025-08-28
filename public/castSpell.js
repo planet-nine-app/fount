@@ -230,8 +230,17 @@
             // No navigation - just show selection confirmation
             console.log('📦 Selection spell completed without navigation (no bdoPubKey)');
             
-            // Show selection confirmation
-            alert(`✅ Added to magistack!\\n\\nSelection: ${JSON.stringify(components, null, 2)}\\n\\nTotal selections: ${window.magistackSelections.length}`);
+            // Show selection confirmation using custom dialog
+            showCustomDialog({
+                title: '✅ Added to Magistack!',
+                message: 'Selection successfully added',
+                details: [
+                    `Selection: ${JSON.stringify(components, null, 2)}`,
+                    '',
+                    `Total selections: ${window.magistackSelections.length}`
+                ],
+                type: 'success'
+            });
             
             // Reset visual state after delay
             setTimeout(() => {
@@ -290,7 +299,16 @@
             element.style.backgroundColor = '#9b59b6';
         }
         
-        alert('🧪 spellTest detected!\\n\\nThis requires The Advancement browser extension for full MAGIC protocol support.\\n\\nFallback: Test spell acknowledged.');
+        showCustomDialog({
+            title: '🧪 SpellTest Detected',
+            message: 'MAGIC protocol spell detected',
+            details: [
+                'This requires The Advancement browser extension for full MAGIC protocol support.',
+                '',
+                'Fallback: Test spell acknowledged.'
+            ],
+            type: 'warning'
+        });
         
         // Reset visual after delay
         setTimeout(() => {
@@ -325,9 +343,18 @@
             element.style.backgroundColor = '#f1c40f';
         }
         
-        // Show spell details
+        // Show spell details using custom dialog
         const componentsText = components ? JSON.stringify(components, null, 2) : 'None';
-        alert(`⚡ Generic spell cast: ${spellType}\\n\\nComponents: ${componentsText}\\n\\nThis is a fallback handler - add specific logic for this spell type.`);
+        showCustomDialog({
+            title: `⚡ Generic Spell: ${spellType}`,
+            message: 'Unknown spell type cast',
+            details: [
+                `Components: ${componentsText}`,
+                '',
+                'This is a fallback handler - add specific logic for this spell type.'
+            ],
+            type: 'info'
+        });
         
         // Reset visual after delay
         setTimeout(() => {
@@ -343,6 +370,189 @@
         }, 1000);
         
         console.log(`⚡ Generic spell ${spellType} completed`);
+    }
+    
+    // ========================================
+    // Custom Dialog System (Tauri-Compatible)
+    // ========================================
+    
+    /**
+     * Show a custom SVG-based dialog (works in Tauri apps)
+     * @param {Object} config - Dialog configuration
+     * @param {string} config.title - Dialog title
+     * @param {string} config.message - Main message
+     * @param {Array<string>} config.details - Array of detail lines
+     * @param {string} config.type - Dialog type: 'info', 'success', 'warning', 'error'
+     */
+    function showCustomDialog(config) {
+        const { title, message, details = [], type = 'info' } = config;
+        
+        console.log(`📱 Custom Dialog: ${title} - ${message}`);
+        
+        // Remove any existing dialog
+        const existingDialog = document.getElementById('castspell-custom-dialog');
+        if (existingDialog) {
+            existingDialog.remove();
+        }
+        
+        // Color scheme based on type
+        const colorSchemes = {
+            info: { bg: '#3498db', border: '#2980b9' },
+            success: { bg: '#27ae60', border: '#229954' },
+            warning: { bg: '#f39c12', border: '#d68910' },
+            error: { bg: '#e74c3c', border: '#c0392b' }
+        };
+        
+        const colors = colorSchemes[type] || colorSchemes.info;
+        
+        // Create dialog container
+        const dialogContainer = document.createElement('div');
+        dialogContainer.id = 'castspell-custom-dialog';
+        dialogContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        `;
+        
+        // Create dialog content
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 480px;
+            width: 90vw;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-top: 4px solid ${colors.bg};
+            position: relative;
+            animation: dialog-appear 0.3s ease-out;
+        `;
+        
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes dialog-appear {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Dialog HTML
+        dialog.innerHTML = `
+            <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                <div style="
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background: ${colors.bg};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 12px;
+                    color: white;
+                    font-size: 20px;
+                    font-weight: bold;
+                ">
+                    ${type === 'success' ? '✓' : type === 'warning' ? '⚠' : type === 'error' ? '✕' : 'ℹ'}
+                </div>
+                <div>
+                    <h3 style="
+                        margin: 0 0 4px 0;
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #2c3e50;
+                    ">${title}</h3>
+                    <p style="
+                        margin: 0;
+                        font-size: 14px;
+                        color: #7f8c8d;
+                    ">${message}</p>
+                </div>
+            </div>
+            
+            ${details.length > 0 ? `
+                <div style="
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin: 16px 0;
+                    font-family: 'Monaco', 'Consolas', monospace;
+                    font-size: 13px;
+                    line-height: 1.5;
+                    color: #2c3e50;
+                    white-space: pre-line;
+                    border-left: 3px solid ${colors.bg};
+                ">${details.join('\\n')}</div>
+            ` : ''}
+            
+            <div style="
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 20px;
+            ">
+                <button onclick="document.getElementById('castspell-custom-dialog').remove()" style="
+                    background: ${colors.bg};
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 10px 20px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                " onmouseover="this.style.background='${colors.border}'" 
+                   onmouseout="this.style.background='${colors.bg}'">
+                    OK
+                </button>
+            </div>
+        `;
+        
+        dialogContainer.appendChild(dialog);
+        document.body.appendChild(dialogContainer);
+        
+        // Auto-close after 10 seconds for non-error dialogs
+        if (type !== 'error') {
+            setTimeout(() => {
+                if (document.getElementById('castspell-custom-dialog')) {
+                    dialogContainer.remove();
+                }
+            }, 10000);
+        }
+        
+        // Close on background click
+        dialogContainer.addEventListener('click', (e) => {
+            if (e.target === dialogContainer) {
+                dialogContainer.remove();
+            }
+        });
+        
+        // Close on Escape key
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                dialogContainer.remove();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        console.log(`📱 Dialog displayed: ${title}`);
     }
     
     // ========================================
@@ -383,8 +593,28 @@
             }
         }));
         
-        // Show navigation confirmation
-        alert(`🧭 Navigating to card: ${bdoPubKey}\n\nThis would fetch the card from BDO and display it.\n\nIn a real implementation:\n• Fetch card content from BDO\n• Update current display\n• Apply spell handlers to new content`);
+        // Show navigation confirmation using custom dialog (Tauri-compatible)
+        console.log(`🧭 NAVIGATION CONFIRMATION: ${bdoPubKey}`);
+        console.log(`📋 This would normally:`);
+        console.log(`   • Fetch card content from BDO`);
+        console.log(`   • Update current display`);
+        console.log(`   • Apply spell handlers to new content`);
+        console.log(`🎯 For MagiCard integration: This is where you'd load the new card SVG`);
+        
+        // Show custom dialog instead of alert
+        showCustomDialog({
+            title: '🧭 Card Navigation',
+            message: `Navigating to card: ${bdoPubKey}`,
+            details: [
+                'This would fetch the card from BDO and display it.',
+                '',
+                'In a real implementation:',
+                '• Fetch card content from BDO',
+                '• Update current display', 
+                '• Apply spell handlers to new content'
+            ],
+            type: 'info'
+        });
         
         // Reset visual after delay
         setTimeout(() => {
