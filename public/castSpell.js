@@ -193,6 +193,10 @@
                     await handleSpellTestSpell(spellComponents, element);
                     break;
                     
+                case 'lookup':
+                    await handleLookupSpell(spellComponents, element);
+                    break;
+                    
                 default:
                     await handleGenericSpell(spellType, spellComponents, element);
                     break;
@@ -340,6 +344,204 @@
         }, 1000);
         
         console.log('🧪 spellTest fallback completed');
+    }
+    
+    /**
+     * Handle 'lookup' spell - decision tree product resolution
+     * Uses magistack selections + catalog data to find and create final product
+     * @param {Object} components - Spell components containing catalog data
+     * @param {Element} element - The spell element
+     */
+    async function handleLookupSpell(components, element) {
+        console.log('🔍 Handling lookup spell for decision tree resolution:', components);
+        
+        if (!components || !components.catalog) {
+            throw new Error('Lookup spell requires spell-components with catalog data');
+        }
+        
+        if (!window.magistackSelections || window.magistackSelections.length === 0) {
+            throw new Error('Lookup spell requires magistack selections to resolve product');
+        }
+        
+        // Visual feedback - flash orange for lookup spells
+        const originalFill = element.getAttribute('fill') || element.style.backgroundColor;
+        if (element.tagName === 'rect' || element.tagName === 'circle') {
+            element.setAttribute('fill', '#f39c12');
+        } else {
+            element.style.backgroundColor = '#f39c12';
+        }
+        
+        try {
+            const { catalog } = components;
+            const selections = window.magistackSelections;
+            
+            console.log('🔍 Resolving product with catalog:', catalog);
+            console.log('🔍 Using magistack selections:', selections);
+            
+            // Build path from selections
+            const selectionValues = selections.map(sel => sel.selection).filter(Boolean);
+            console.log('🔍 Selection path:', selectionValues);
+            
+            // Find matching product in catalog
+            const product = findProductInCatalog(catalog, selectionValues);
+            
+            if (!product) {
+                throw new Error(`No product found for selections: ${selectionValues.join(' → ')}`);
+            }
+            
+            console.log('✅ Found product:', product);
+            
+            // Navigate to product card if bdoPubKey is available
+            if (product.bdoPubKey) {
+                console.log('🧭 Navigating to product card:', product.bdoPubKey);
+                await navigateToCard(product.bdoPubKey, element);
+            } else {
+                console.warn('⚠️ No bdoPubKey found for product, showing details only');
+                await createAndDisplayProduct(product, selectionValues, catalog);
+            }
+            
+        } catch (error) {
+            console.error('❌ Lookup spell failed:', error);
+            
+            showCustomDialog({
+                title: '❌ Lookup Failed',
+                message: 'Could not resolve product from selections',
+                details: [
+                    error.message,
+                    '',
+                    'Check that:',
+                    '• Magistack has valid selections',
+                    '• Catalog data is properly formatted',
+                    '• Product exists for selected path'
+                ],
+                type: 'error'
+            });
+        }
+        
+        // Reset visual after delay
+        setTimeout(() => {
+            if (element.tagName === 'rect' || element.tagName === 'circle') {
+                if (originalFill) {
+                    element.setAttribute('fill', originalFill);
+                } else {
+                    element.removeAttribute('fill');
+                }
+            } else {
+                element.style.backgroundColor = originalFill || '';
+            }
+        }, 1000);
+        
+        console.log('🔍 Lookup spell completed');
+    }
+    
+    /**
+     * Find product in catalog based on selection path
+     * @param {Object} catalog - The menu catalog structure
+     * @param {Array<string>} selectionPath - Array of selection values
+     * @returns {Object|null} - Found product or null
+     */
+    function findProductInCatalog(catalog, selectionPath) {
+        console.log('🔍 Searching catalog for path:', selectionPath);
+        
+        if (!catalog.products || !Array.isArray(catalog.products)) {
+            console.warn('⚠️ No products array in catalog');
+            return null;
+        }
+        
+        // Look for product that matches the selection path
+        for (const product of catalog.products) {
+            // Try different matching strategies
+            
+            // Strategy 1: Check if product name contains all selections
+            if (product.name || product.product) {
+                const productName = product.name || product.product;
+                const matchesAll = selectionPath.every(selection => 
+                    productName.toLowerCase().includes(selection.toLowerCase())
+                );
+                
+                if (matchesAll) {
+                    console.log('✅ Found matching product by name:', productName);
+                    console.log('🔍 Product bdoPubKey:', product.bdoPubKey || 'NOT FOUND');
+                    console.log('🔍 Product ID:', product.productId || product.id || 'NOT FOUND');
+                    return product;
+                }
+            }
+            
+            // Strategy 2: Check product path/hierarchy if available
+            if (product.path && Array.isArray(product.path)) {
+                const pathMatches = product.path.length === selectionPath.length &&
+                    product.path.every((pathItem, index) => 
+                        pathItem.toLowerCase() === selectionPath[index].toLowerCase()
+                    );
+                
+                if (pathMatches) {
+                    console.log('✅ Found matching product by path:', product.path);
+                    console.log('🔍 Product bdoPubKey:', product.bdoPubKey || 'NOT FOUND');
+                    console.log('🔍 Product ID:', product.productId || product.id || 'NOT FOUND');
+                    return product;
+                }
+            }
+            
+            // Strategy 3: Direct selection match (for simpler catalogs)
+            if (product.selections && Array.isArray(product.selections)) {
+                const selectionsMatch = product.selections.length === selectionPath.length &&
+                    product.selections.every((sel, index) => 
+                        sel.toLowerCase() === selectionPath[index].toLowerCase()
+                    );
+                
+                if (selectionsMatch) {
+                    console.log('✅ Found matching product by selections:', product.selections);
+                    console.log('🔍 Product bdoPubKey:', product.bdoPubKey || 'NOT FOUND');
+                    console.log('🔍 Product ID:', product.productId || product.id || 'NOT FOUND');
+                    return product;
+                }
+            }
+        }
+        
+        console.warn('❌ No matching product found for selections:', selectionPath);
+        return null;
+    }
+    
+    /**
+     * Create and display product card from lookup result
+     * @param {Object} product - The product data from catalog
+     * @param {Array<string>} selectionPath - The path that led to this product  
+     * @param {Object} catalog - The full catalog for context
+     */
+    async function createAndDisplayProduct(product, selectionPath, catalog) {
+        console.log('🛍️ Creating product card for:', product);
+        
+        // Extract product details
+        const productName = product.name || product.product || 'Unknown Product';
+        const productPrice = product.price || 'Price not available';
+        const productId = product.id || product.uuid || `generated_${Date.now()}`;
+        
+        // Dispatch product found event for apps to handle
+        window.dispatchEvent(new CustomEvent('productLookupComplete', {
+            detail: {
+                product: product,
+                selectionPath: selectionPath,
+                productId: productId,
+                catalog: catalog,
+                timestamp: new Date().toISOString()
+            }
+        }));
+        
+        showCustomDialog({
+            title: '🛍️ Product Found',
+            message: `Found: ${productName}`,
+            details: [
+                `Selection Path: ${selectionPath.join(' → ')}`,
+                `Product: ${productName}`,
+                `Price: ${productPrice}`,
+                `Product ID: ${productId}`,
+                '',
+                'Product details available in productLookupComplete event'
+            ],
+            type: 'success'
+        });
+        
+        console.log('✅ Product card creation completed');
     }
     
     /**
