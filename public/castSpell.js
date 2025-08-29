@@ -436,70 +436,54 @@
     
     /**
      * Find product in catalog based on selection path
-     * @param {Object} catalog - The menu catalog structure
+     * @param {Object} catalog - The nested map catalog structure
      * @param {Array<string>} selectionPath - Array of selection values
      * @returns {Object|null} - Found product or null
      */
     function findProductInCatalog(catalog, selectionPath) {
-        console.log('🔍 Searching catalog for path:', selectionPath);
+        console.log('🔍 Searching nested catalog map for path:', selectionPath);
+        console.log('🔍 Catalog structure:', catalog);
         
-        if (!catalog.products || !Array.isArray(catalog.products)) {
-            console.warn('⚠️ No products array in catalog');
+        // Navigate through nested map using selection path
+        // Expected structure: {"adult": {"two-hour": {productId, bdoPubKey, price, name}, ...}, ...}
+        let currentLevel = catalog;
+        
+        for (let i = 0; i < selectionPath.length; i++) {
+            const selection = selectionPath[i];
+            console.log(`🔍 Looking for "${selection}" in level ${i + 1}:`, Object.keys(currentLevel));
+            
+            if (currentLevel[selection]) {
+                currentLevel = currentLevel[selection];
+                console.log(`✅ Found "${selection}" at level ${i + 1}`);
+            } else {
+                console.warn(`❌ Selection "${selection}" not found at level ${i + 1}`);
+                console.warn(`Available options:`, Object.keys(currentLevel));
+                return null;
+            }
+        }
+        
+        // At this point, currentLevel should contain the product data
+        // Check if we have a valid product object
+        if (currentLevel && typeof currentLevel === 'object' && 
+            (currentLevel.productId || currentLevel.id)) {
+            
+            const product = {
+                productId: currentLevel.productId || currentLevel.id,
+                bdoPubKey: currentLevel.bdoPubKey,
+                price: currentLevel.price,
+                name: currentLevel.name,
+                selectionPath: selectionPath
+            };
+            
+            console.log('✅ Found product via nested map navigation:', product);
+            console.log('🔍 Product bdoPubKey:', product.bdoPubKey || 'NOT FOUND');
+            console.log('🔍 Product ID:', product.productId || 'NOT FOUND');
+            
+            return product;
+        } else {
+            console.warn('❌ Selection path led to invalid product data:', currentLevel);
             return null;
         }
-        
-        // Look for product that matches the selection path
-        for (const product of catalog.products) {
-            // Try different matching strategies
-            
-            // Strategy 1: Check if product name contains all selections
-            if (product.name || product.product) {
-                const productName = product.name || product.product;
-                const matchesAll = selectionPath.every(selection => 
-                    productName.toLowerCase().includes(selection.toLowerCase())
-                );
-                
-                if (matchesAll) {
-                    console.log('✅ Found matching product by name:', productName);
-                    console.log('🔍 Product bdoPubKey:', product.bdoPubKey || 'NOT FOUND');
-                    console.log('🔍 Product ID:', product.productId || product.id || 'NOT FOUND');
-                    return product;
-                }
-            }
-            
-            // Strategy 2: Check product path/hierarchy if available
-            if (product.path && Array.isArray(product.path)) {
-                const pathMatches = product.path.length === selectionPath.length &&
-                    product.path.every((pathItem, index) => 
-                        pathItem.toLowerCase() === selectionPath[index].toLowerCase()
-                    );
-                
-                if (pathMatches) {
-                    console.log('✅ Found matching product by path:', product.path);
-                    console.log('🔍 Product bdoPubKey:', product.bdoPubKey || 'NOT FOUND');
-                    console.log('🔍 Product ID:', product.productId || product.id || 'NOT FOUND');
-                    return product;
-                }
-            }
-            
-            // Strategy 3: Direct selection match (for simpler catalogs)
-            if (product.selections && Array.isArray(product.selections)) {
-                const selectionsMatch = product.selections.length === selectionPath.length &&
-                    product.selections.every((sel, index) => 
-                        sel.toLowerCase() === selectionPath[index].toLowerCase()
-                    );
-                
-                if (selectionsMatch) {
-                    console.log('✅ Found matching product by selections:', product.selections);
-                    console.log('🔍 Product bdoPubKey:', product.bdoPubKey || 'NOT FOUND');
-                    console.log('🔍 Product ID:', product.productId || product.id || 'NOT FOUND');
-                    return product;
-                }
-            }
-        }
-        
-        console.warn('❌ No matching product found for selections:', selectionPath);
-        return null;
     }
     
     /**
