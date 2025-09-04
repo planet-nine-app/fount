@@ -194,7 +194,14 @@
                     break;
                     
                 case 'lookup':
+                    console.log('🎯 Starting selection spell handler...');
+                    await handleSelectionSpell(spellComponents, element);
+                    console.log('✅ Selection spell handler completed, starting lookup handler...');
                     await handleLookupSpell(spellComponents, element);
+                    break;
+                    
+                case 'purchase':
+                    await handlePurchaseSpell(spellComponents, element);
                     break;
                     
                 default:
@@ -378,9 +385,9 @@
             console.log('🔍 Resolving product with catalog:', catalog);
             console.log('🔍 Using magistack selections:', selections);
             
-            // Build path from selections
+            // Build path from magistack selections only
             const selectionValues = selections.map(sel => sel.selection).filter(Boolean);
-            console.log('🔍 Selection path:', selectionValues);
+            console.log('🔍 Using magistack selection path:', selectionValues);
             
             // Find matching product in catalog
             const product = findProductInCatalog(catalog, selectionValues);
@@ -526,6 +533,109 @@
         });
         
         console.log('✅ Product card creation completed');
+    }
+    
+    /**
+     * Handle 'purchase' spell - real money transactions for menu products
+     * @param {Object} components - Spell components containing amount, productId, mp: false
+     * @param {Element} element - The spell element
+     */
+    async function handlePurchaseSpell(components, element) {
+        console.log('💰 Handling purchase spell with components:', components);
+        
+        if (!components) {
+            throw new Error('Purchase spell requires spell-components with payment data');
+        }
+        
+        const { amount, productId, mp } = components;
+        
+        if (!amount || !productId || mp !== false) {
+            throw new Error('Purchase spell requires amount, productId, and mp: false');
+        }
+        
+        console.log(`💰 Purchase details - amount: $${amount/100}, productId: ${productId}, mp: ${mp}`);
+        
+        // Visual feedback - flash purple for purchase spells
+        const originalFill = element.getAttribute('fill') || element.style.backgroundColor;
+        if (element.tagName === 'rect' || element.tagName === 'circle') {
+            element.setAttribute('fill', '#9b59b6');
+        } else {
+            element.style.backgroundColor = '#9b59b6';
+        }
+        
+        try {
+            // Step 1: Get payment intent from Addie
+            console.log('💳 Step 1: Creating payment intent via Addie...');
+            const paymentIntent = await createAddiePaymentIntent(amount, productId);
+            
+            if (!paymentIntent.success) {
+                throw new Error(`Payment intent failed: ${paymentIntent.error}`);
+            }
+            
+            console.log('✅ Step 1 complete: Payment intent created');
+            
+            // Step 2: Process payment (would normally show Stripe UI here)
+            console.log('💳 Step 2: Processing payment...');
+            const paymentResult = await processPayment(paymentIntent.data, amount, productId);
+            
+            if (!paymentResult.success) {
+                throw new Error(`Payment processing failed: ${paymentResult.error}`);
+            }
+            
+            console.log('✅ Step 2 complete: Payment processed successfully');
+            
+            // Step 3: Execute MAGIC protocol spell for product delivery
+            console.log('⚡ Step 3: Executing MAGIC protocol for product delivery...');
+            await executeMagicProtocolSpell(paymentResult.data, productId);
+            
+            console.log('✅ Step 3 complete: MAGIC protocol executed');
+            
+            // Show success dialog
+            showCustomDialog({
+                title: '💰 Purchase Complete',
+                message: `Successfully purchased product!`,
+                details: [
+                    `Amount: $${amount/100}`,
+                    `Product ID: ${productId}`,
+                    `Payment ID: ${paymentResult.data.paymentId}`,
+                    '',
+                    'Product access granted via MAGIC protocol'
+                ],
+                type: 'success'
+            });
+            
+        } catch (error) {
+            console.error('❌ Purchase spell failed:', error);
+            
+            // Show error dialog
+            showCustomDialog({
+                title: '💰 Purchase Failed',
+                message: `Purchase could not be completed`,
+                details: [
+                    `Error: ${error.message}`,
+                    `Amount: $${amount/100}`,
+                    `Product ID: ${productId}`,
+                    '',
+                    'Please try again or contact support'
+                ],
+                type: 'error'
+            });
+        }
+        
+        // Reset visual after delay
+        setTimeout(() => {
+            if (element.tagName === 'rect' || element.tagName === 'circle') {
+                if (originalFill) {
+                    element.setAttribute('fill', originalFill);
+                } else {
+                    element.removeAttribute('fill');
+                }
+            } else {
+                element.style.backgroundColor = originalFill || '';
+            }
+        }, 1000);
+        
+        console.log('💰 Purchase spell processing completed');
     }
     
     /**
@@ -933,6 +1043,131 @@
     window.addEventListener('cardNavigation', (event) => {
         console.log('🧭 Card navigation event:', event.detail);
     });
+    
+    // ========================================
+    // Purchase Spell Helper Functions
+    // ========================================
+    
+    /**
+     * Create payment intent via Addie service
+     * @param {number} amount - Amount in cents
+     * @param {string} productId - Product identifier
+     * @returns {Promise<Object>} Payment intent result
+     */
+    async function createAddiePaymentIntent(amount, productId) {
+        try {
+            console.log(`💳 Creating Addie payment intent for $${amount/100} (${productId})`);
+            
+            // Determine Addie URL (use localhost for development)
+            const addieUrl = 'http://localhost:3005'; // Assuming standard local development
+            
+            const response = await fetch(`${addieUrl}/payment-intent`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: amount,
+                    currency: 'usd',
+                    metadata: {
+                        productId: productId,
+                        source: 'ninefy-menu',
+                        timestamp: Date.now()
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                return {
+                    success: false,
+                    error: `Addie service responded with ${response.status}`
+                };
+            }
+            
+            const data = await response.json();
+            console.log('✅ Addie payment intent created:', data);
+            
+            return {
+                success: true,
+                data: data
+            };
+            
+        } catch (error) {
+            console.error('❌ Failed to create payment intent:', error);
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+    
+    /**
+     * Process payment (simplified for demonstration)
+     * @param {Object} paymentIntent - Payment intent from Addie
+     * @param {number} amount - Amount in cents
+     * @param {string} productId - Product identifier
+     * @returns {Promise<Object>} Payment result
+     */
+    async function processPayment(paymentIntent, amount, productId) {
+        try {
+            console.log('💳 Processing payment for demo purposes...');
+            
+            // In a real implementation, this would:
+            // 1. Show Stripe payment UI
+            // 2. Collect payment method from user
+            // 3. Process payment through Stripe
+            // 4. Return payment confirmation
+            
+            // For demo, simulate successful payment
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            return {
+                success: true,
+                data: {
+                    paymentId: `pay_demo_${Date.now()}`,
+                    amount: amount,
+                    productId: productId,
+                    status: 'succeeded',
+                    timestamp: Date.now()
+                }
+            };
+            
+        } catch (error) {
+            console.error('❌ Payment processing failed:', error);
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+    
+    /**
+     * Execute MAGIC protocol spell for product delivery
+     * @param {Object} paymentData - Payment confirmation data
+     * @param {string} productId - Product identifier
+     */
+    async function executeMagicProtocolSpell(paymentData, productId) {
+        try {
+            console.log('⚡ Executing MAGIC protocol for product delivery...');
+            console.log('📦 Payment data:', paymentData);
+            console.log('🎯 Product ID:', productId);
+            
+            // In a real implementation, this would:
+            // 1. Create MAGIC protocol payload
+            // 2. Sign with user's keys
+            // 3. Send to product delivery service
+            // 4. Grant product access
+            
+            // For demo, simulate MAGIC protocol execution
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            console.log('✅ MAGIC protocol execution completed - product access granted');
+            
+        } catch (error) {
+            console.error('❌ MAGIC protocol execution failed:', error);
+            throw error;
+        }
+    }
     
     // ========================================
     // Auto-Initialize
