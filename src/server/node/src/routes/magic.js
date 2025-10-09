@@ -216,11 +216,11 @@ console.log('🔍 DEBUG: spellDefinition =', spellDefinition);
 console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition?.giveGalacticNineum);
       if (spellDefinition?.giveGalacticNineum) {
         console.log('🔍 DEBUG: giveGalacticNineum block executing');
-        // Only give Galactic nineum to the first 4 users
+        // Only give Galactic nineum to the first 10 users (increased for testing)
         const currentGalacticCount = await db.countGalacticNineum();
-        console.log(`💎 Galactic nineum count: ${currentGalacticCount}/4`);
+        console.log(`💎 Galactic nineum count: ${currentGalacticCount}/10`);
 
-        if (currentGalacticCount < 4) {
+        if (currentGalacticCount < 10) {
           console.log('  → Giving Galactic nineum to user on joinup');
           const galaxy = process.env.NINEUM_ADDRESS || '28880014';
           console.log(`  🔍 DEBUG: About to call constructGalacticNineum with galaxy: ${galaxy}`);
@@ -238,7 +238,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
           const verifyNineum = await db.getNineum(caster);
           console.log(`  🔍 DEBUG: User nineum after save:`, verifyNineum);
         } else {
-          console.log('  ⚠️  Maximum Galactic nineum (4) already distributed, skipping');
+          console.log('  ⚠️  Maximum Galactic nineum (10) already distributed, skipping');
         }
       }
 
