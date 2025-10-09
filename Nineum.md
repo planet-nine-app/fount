@@ -8,7 +8,17 @@ One byte - Charge: This can be positive or negative. Other charges are possible 
 
 One byte - Direction: This can be up, down, north, south, east, or west. Other directions are possible as the protocol is explored.
 
-One byte - Rarity: This can be common, nine, uncommon, rare, epic, legendary, mythical. Other rarities are possible as the protocol is explored.
+One byte - Rarity: This can be common, nine, uncommon, rare, epic, legendary, mythical, or special permission levels. Other rarities are possible as the protocol is explored.
+
+**Special Permission Levels (Rarity Byte)**: Certain rarity values are reserved for permission-based nineum that grant administrative capabilities within an allyabase instance:
+
+- **`ff` - Galactic Permission** (Highest): Full administrative control over the allyabase instance
+- **`fe` - Constellation Permission**: High-level administrative capabilities
+- **`fd` - Scalar Permission**: Mid-level administrative capabilities
+- **`fc` - Stellation Permission**: Minimum level required for spellbook writing
+- **`fb` - World Permission**: Basic administrative capabilities
+
+The permission system uses byte position 14-16 (0-indexed) in the nineum string to determine the permission level. Users with Stellation permission or higher can modify spellbooks for their allyabase instance.
 
 One byte - Size: This can be miniscule, tiny, small, medium, standard, big, large, huge. Other sizes are possible as the protocol is explored.
 

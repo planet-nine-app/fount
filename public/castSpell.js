@@ -460,10 +460,15 @@
             console.log(`🔍 Looking for "${selection}" in level ${i + 1}:`, Object.keys(currentLevel));
             
             if (currentLevel[selection]) {
+                // Exact match found
                 currentLevel = currentLevel[selection];
-                console.log(`✅ Found "${selection}" at level ${i + 1}`);
+                console.log(`✅ Found exact match "${selection}" at level ${i + 1}`);
+            } else if (currentLevel['any']) {
+                // Try "any" wildcard fallback
+                currentLevel = currentLevel['any'];
+                console.log(`🔄 Using "any" wildcard fallback for "${selection}" at level ${i + 1}`);
             } else {
-                console.warn(`❌ Selection "${selection}" not found at level ${i + 1}`);
+                console.warn(`❌ Selection "${selection}" not found at level ${i + 1} (no "any" fallback available)`);
                 console.warn(`Available options:`, Object.keys(currentLevel));
                 return null;
             }

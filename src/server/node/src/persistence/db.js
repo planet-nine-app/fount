@@ -140,6 +140,24 @@ console.log(galaxyMap[galaxy]);
   getKeys: async () => {
     const keyString = await client.get('keys');
     return JSON.parse(keyString);
+  },
+
+  countGalacticNineum: async () => {
+    const flavorMapJSON = (await client.get('flavorMap')) || '{}';
+    const flavorMap = JSON.parse(flavorMapJSON);
+
+    // Galactic nineum have 'ff' at positions 4-6 in the flavor string (12 chars total)
+    // Flavor format: charge(2) + direction(2) + rarity(2) + size(2) + texture(2) + shape(2) = 12 chars
+    // Rarity is at positions 4-6 (0-indexed)
+    let galacticCount = 0;
+
+    for (const flavor in flavorMap) {
+      if (flavor.substring(4, 6) === 'ff') {
+        galacticCount += flavorMap[flavor];
+      }
+    }
+
+    return galacticCount;
   }
 
 };

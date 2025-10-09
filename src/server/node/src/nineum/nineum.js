@@ -129,7 +129,106 @@ function zeroPad(str, places) {
   return str;
 };
 
+const PERMISSION_LEVELS = {
+  GALACTIC: 'ff',
+  CONSTELLATION: 'fe',
+  SCALAR: 'fd',
+  STELLATION: 'fc',
+  WORLD: 'fb'
+};
+
+const PERMISSION_HIERARCHY = {
+  'ff': 5, // Galactic
+  'fe': 4, // Constellation
+  'fd': 3, // Scalar
+  'fc': 2, // Stellation (minimum for spellbook writing)
+  'fb': 1  // World
+};
+
+const PERMISSION_NAMES = {
+  'ff': 'Galactic',
+  'fe': 'Constellation',
+  'fd': 'Scalar',
+  'fc': 'Stellation',
+  'fb': 'World'
+};
+
 const nineum = {
+  /**
+   * Get the permission level from a nineum string
+   * @param {string} nineumString - The nineum identifier
+   * @returns {string|null} The permission level code (ff, fe, fd, fc, fb) or null
+   */
+  getPermissionLevel: (nineumString) => {
+    if (!nineumString || nineumString.length < 16) {
+      return null;
+    }
+    const level = nineumString.slice(14, 16);
+    return PERMISSION_HIERARCHY[level] ? level : null;
+  },
+
+  /**
+   * Get the permission name from a nineum string
+   * @param {string} nineumString - The nineum identifier
+   * @returns {string|null} The permission name or null
+   */
+  getPermissionName: (nineumString) => {
+    const level = nineum.getPermissionLevel(nineumString);
+    return level ? PERMISSION_NAMES[level] : null;
+  },
+
+  /**
+   * Check if a nineum has a specific permission level or higher
+   * @param {string} nineumString - The nineum identifier
+   * @param {string} requiredLevel - The required permission level code
+   * @returns {boolean} True if nineum has required permission or higher
+   */
+  hasPermission: (nineumString, requiredLevel) => {
+    const level = nineum.getPermissionLevel(nineumString);
+    if (!level || !PERMISSION_HIERARCHY[requiredLevel]) {
+      return false;
+    }
+    return PERMISSION_HIERARCHY[level] >= PERMISSION_HIERARCHY[requiredLevel];
+  },
+
+  /**
+   * Get the highest permission level from a user's nineum collection
+   * @param {object} user - The user object with nineum array
+   * @returns {object} Object with level code, name, and hierarchy value
+   */
+  getHighestPermission: (user) => {
+    if (!user || !user.nineum || !Array.isArray(user.nineum)) {
+      return { level: null, name: null, hierarchy: 0 };
+    }
+
+    let highestLevel = null;
+    let highestHierarchy = 0;
+
+    for (const nineumString of user.nineum) {
+      const level = nineum.getPermissionLevel(nineumString);
+      if (level && PERMISSION_HIERARCHY[level] > highestHierarchy) {
+        highestLevel = level;
+        highestHierarchy = PERMISSION_HIERARCHY[level];
+      }
+    }
+
+    return {
+      level: highestLevel,
+      name: highestLevel ? PERMISSION_NAMES[highestLevel] : null,
+      hierarchy: highestHierarchy
+    };
+  },
+
+  /**
+   * Check if user can write to spellbooks (requires Stellation or higher)
+   * @param {object} user - The user object with nineum array
+   * @returns {boolean} True if user has Stellation permission or higher
+   */
+  canWriteToSpellbook: (user) => {
+    const highest = nineum.getHighestPermission(user);
+    return highest.hierarchy >= PERMISSION_HIERARCHY[PERMISSION_LEVELS.STELLATION];
+  },
+
   transferNineum: async (sourceUser, destinationUser, nineumUniqueIds, price, currency) => {
     // Price and currency are ignored for now, but paid transfers will be coming
 
@@ -161,20 +260,27 @@ const nineum = {
     return universe + galaxy + flavor + year + ordinal;
   },
 
+  // Permission Levels (highest to lowest):
+  // ff - Galactic (highest permission)
+  // fe - Constellation
+  // fd - Scalar
+  // fc - Stellation (minimum for spellbook writing)
+  // fb - World
+
   constructGalacticNineum: async (galaxy) => {
     const universe = '01';
     let flavor = '';
     let ordinal = '';
-  
+
     const charge = getOneFromSet(chargeSet);
     const direction = getOneFromSet(directionSet);
-    const rarity = 'ff';
+    const rarity = 'ff'; // Galactic permission
     const size = getOneFromSet(sizeSet);
     const texture = getOneFromSet(textureSet);
     const shape = getOneFromSet(shapeSet);
-  
+
     flavor = charge + direction + rarity + size + texture + shape;
-  
+
     let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
     const year = zeroPad('' + yearDiff, 2);
 
@@ -184,20 +290,20 @@ const nineum = {
     return universe + galaxy + flavor + year + ordinal;
   },
 
-  constructAdministrativeNineum: async (galaxy) => {
+  constructConstellationNineum: async (galaxy) => {
     const universe = '01';
     let flavor = '';
     let ordinal = '';
-  
+
     const charge = getOneFromSet(chargeSet);
     const direction = getOneFromSet(directionSet);
-    const rarity = 'fe';
+    const rarity = 'fe'; // Constellation permission
     const size = getOneFromSet(sizeSet);
     const texture = getOneFromSet(textureSet);
     const shape = getOneFromSet(shapeSet);
-  
+
     flavor = charge + direction + rarity + size + texture + shape;
-  
+
     let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
     const year = zeroPad('' + yearDiff, 2);
 
@@ -205,6 +311,80 @@ const nineum = {
     ordinal = zeroPad((flavorCount + 1) + '', 8);
 
     return universe + galaxy + flavor + year + ordinal;
+  },
+
+  constructScalarNineum: async (galaxy) => {
+    const universe = '01';
+    let flavor = '';
+    let ordinal = '';
+
+    const charge = getOneFromSet(chargeSet);
+    const direction = getOneFromSet(directionSet);
+    const rarity = 'fd'; // Scalar permission
+    const size = getOneFromSet(sizeSet);
+    const texture = getOneFromSet(textureSet);
+    const shape = getOneFromSet(shapeSet);
+
+    flavor = charge + direction + rarity + size + texture + shape;
+
+    let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
+    const year = zeroPad('' + yearDiff, 2);
+
+    const flavorCount = await db.countForFlavorOfNineum(flavor);
+    ordinal = zeroPad((flavorCount + 1) + '', 8);
+
+    return universe + galaxy + flavor + year + ordinal;
+  },
+
+  constructStellationNineum: async (galaxy) => {
+    const universe = '01';
+    let flavor = '';
+    let ordinal = '';
+
+    const charge = getOneFromSet(chargeSet);
+    const direction = getOneFromSet(directionSet);
+    const rarity = 'fc'; // Stellation permission (minimum for spellbook writing)
+    const size = getOneFromSet(sizeSet);
+    const texture = getOneFromSet(textureSet);
+    const shape = getOneFromSet(shapeSet);
+
+    flavor = charge + direction + rarity + size + texture + shape;
+
+    let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
+    const year = zeroPad('' + yearDiff, 2);
+
+    const flavorCount = await db.countForFlavorOfNineum(flavor);
+    ordinal = zeroPad((flavorCount + 1) + '', 8);
+
+    return universe + galaxy + flavor + year + ordinal;
+  },
+
+  constructWorldNineum: async (galaxy) => {
+    const universe = '01';
+    let flavor = '';
+    let ordinal = '';
+
+    const charge = getOneFromSet(chargeSet);
+    const direction = getOneFromSet(directionSet);
+    const rarity = 'fb'; // World permission
+    const size = getOneFromSet(sizeSet);
+    const texture = getOneFromSet(textureSet);
+    const shape = getOneFromSet(shapeSet);
+
+    flavor = charge + direction + rarity + size + texture + shape;
+
+    let yearDiff = dayjs().diff(dayjs(systemStartTime), 'years') + 1;
+    const year = zeroPad('' + yearDiff, 2);
+
+    const flavorCount = await db.countForFlavorOfNineum(flavor);
+    ordinal = zeroPad((flavorCount + 1) + '', 8);
+
+    return universe + galaxy + flavor + year + ordinal;
+  },
+
+  // Legacy alias for backward compatibility
+  constructAdministrativeNineum: async (galaxy) => {
+    return nineum.constructConstellationNineum(galaxy);
   },
 
   constructSpecificFlavorNineum: async (_galaxy, _charge, _direction, _rarity, _size, _texture, _shape, quantity) => {
@@ -234,6 +414,25 @@ const nineum = {
     }
 
     return constructed;
+  },
+
+  // Check if user has Stellation permission or higher (fc, fd, fe, ff)
+  canWriteToSpellbook: (user) => {
+    const nineumList = user.nineum || [];
+
+    for (const nineumId of nineumList) {
+      if (nineumId.length !== 32) continue;
+
+      // Permission is at positions 14-16 (within flavor 10-22, rarity is at 4-6 of flavor)
+      const permission = nineumId.substring(14, 16);
+
+      // Stellation (fc) or higher permissions: fc, fd, fe, ff
+      if (['fc', 'fd', 'fe', 'ff'].includes(permission)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 };
 
