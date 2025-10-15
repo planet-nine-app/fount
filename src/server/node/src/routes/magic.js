@@ -397,6 +397,119 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
         console.log(`  📝 Spellbook updated at ${spellbookPath}`);
       }
 
+      // 🎓 GRANT EXPERIENCE FOR SUCCESSFUL SPELL RESOLUTION
+      // Every successfully resolved spell grants experience equal to its cost
+      if (spell.totalCost && spell.totalCost > 0) {
+        const experienceGained = spell.totalCost; // 1:1 ratio with spell cost
+
+        // Initialize experiencePool if it doesn't exist
+        if (!caster.experiencePool) {
+          caster.experiencePool = 0;
+        }
+
+        caster.experiencePool += experienceGained;
+        await db.saveUser(caster);
+
+        console.log(`🎓 Granted ${experienceGained} experience to ${caster.uuid} (total: ${caster.experiencePool})`);
+      }
+
+      // 💎 GRANT NINEUM FOR SUCCESSFUL SPELL RESOLUTION (CASTER)
+      // Rate: 200 MP or $1 = 1 nineum
+      // Fractional amounts handled as probability
+      if (spell.totalCost && spell.totalCost > 0) {
+        const NINEUM_RATE = 200; // 200 MP = 1 nineum
+        const nineumAmount = spell.totalCost / NINEUM_RATE;
+
+        // Get integer and fractional parts
+        const guaranteedNineum = Math.floor(nineumAmount);
+        const fractionalNineum = nineumAmount - guaranteedNineum;
+
+        // Determine total nineum to grant
+        let totalNineumToGrant = guaranteedNineum;
+
+        // Handle fractional nineum as probability
+        if (fractionalNineum > 0) {
+          const roll = Math.random();
+          if (roll < fractionalNineum) {
+            totalNineumToGrant += 1;
+            console.log(`💎 Probability roll: ${roll.toFixed(3)} < ${fractionalNineum.toFixed(3)} - granting bonus nineum!`);
+          } else {
+            console.log(`💎 Probability roll: ${roll.toFixed(3)} >= ${fractionalNineum.toFixed(3)} - no bonus nineum`);
+          }
+        }
+
+        // Grant nineum if any should be granted
+        if (totalNineumToGrant > 0) {
+          const grantedNineum = [];
+
+          for (let i = 0; i < totalNineumToGrant; i++) {
+            const newNineum = await nineum.constructNineum();
+            grantedNineum.push(newNineum);
+            console.log(`  💎 Constructed nineum ${i + 1}/${totalNineumToGrant}: ${newNineum}`);
+          }
+
+          // Save all granted nineum to user
+          await db.saveNineum(caster, grantedNineum);
+
+          console.log(`💎 Granted ${totalNineumToGrant} nineum to ${caster.uuid} (${spell.totalCost} MP / ${NINEUM_RATE} = ${nineumAmount.toFixed(2)})`);
+        } else {
+          console.log(`💎 No nineum granted (${spell.totalCost} MP / ${NINEUM_RATE} = ${nineumAmount.toFixed(2)} - not enough for guaranteed nineum)`);
+        }
+      }
+
+      // 🎓💎 GRANT REWARDS TO GATEWAY PARTICIPANTS
+      // Gateway users receive 10% of caster's rewards for facilitating spell resolution
+      if (gatewayUsers.length > 0 && spell.totalCost && spell.totalCost > 0) {
+        const GATEWAY_REWARD_RATE = 0.10; // 10% of caster's rewards per gateway
+        console.log(`\n🌉 Rewarding ${gatewayUsers.length} gateway participants at ${GATEWAY_REWARD_RATE * 100}% rate`);
+
+        for (const gatewayUser of gatewayUsers) {
+          // Grant experience to gateway user
+          const gatewayExperience = Math.floor(spell.totalCost * GATEWAY_REWARD_RATE);
+
+          if (gatewayExperience > 0) {
+            if (!gatewayUser.experiencePool) {
+              gatewayUser.experiencePool = 0;
+            }
+            gatewayUser.experiencePool += gatewayExperience;
+            await db.saveUser(gatewayUser);
+            console.log(`  🎓 Gateway ${gatewayUser.uuid}: +${gatewayExperience} experience (total: ${gatewayUser.experiencePool})`);
+          }
+
+          // Grant nineum to gateway user (with probability)
+          const NINEUM_RATE = 200;
+          const gatewayNineumAmount = (spell.totalCost * GATEWAY_REWARD_RATE) / NINEUM_RATE;
+          const guaranteedGatewayNineum = Math.floor(gatewayNineumAmount);
+          const fractionalGatewayNineum = gatewayNineumAmount - guaranteedGatewayNineum;
+
+          let totalGatewayNineum = guaranteedGatewayNineum;
+
+          // Handle fractional nineum as probability
+          if (fractionalGatewayNineum > 0) {
+            const roll = Math.random();
+            if (roll < fractionalGatewayNineum) {
+              totalGatewayNineum += 1;
+              console.log(`  💎 Gateway probability roll: ${roll.toFixed(3)} < ${fractionalGatewayNineum.toFixed(3)} - bonus nineum!`);
+            }
+          }
+
+          // Grant nineum if any should be granted
+          if (totalGatewayNineum > 0) {
+            const grantedGatewayNineum = [];
+
+            for (let i = 0; i < totalGatewayNineum; i++) {
+              const newNineum = await nineum.constructNineum();
+              grantedGatewayNineum.push(newNineum);
+            }
+
+            await db.saveNineum(gatewayUser, grantedGatewayNineum);
+            console.log(`  💎 Gateway ${gatewayUser.uuid}: +${totalGatewayNineum} nineum (${(spell.totalCost * GATEWAY_REWARD_RATE).toFixed(0)} MP / ${NINEUM_RATE})`);
+          } else if (gatewayNineumAmount > 0) {
+            console.log(`  💎 Gateway ${gatewayUser.uuid}: ${(gatewayNineumAmount * 100).toFixed(1)}% chance for nineum (didn't roll)`);
+          }
+        }
+      }
+
       const signatureMap = {};
       return res.send({
 	success: true,

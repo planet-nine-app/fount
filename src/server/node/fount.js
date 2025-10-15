@@ -26,6 +26,7 @@ import sessionless from 'sessionless-node';
 import bdo from 'bdo-js';
 import addie from 'addie-js';
 import spellbook from './spellbooks/spellbook.js';
+import MAGIC from './src/magic/magic.js';
 
 console.log('spellbook:', JSON.stringify(spellbook));
 
@@ -112,6 +113,27 @@ app.post('/resolve/:spellName', resolve);
 app.post('/user/:uuid/transfer', transfer);
 
 app.post('/user/:uuid/grant', grant);
+
+// MAGIC spell endpoint for Fount's internal operations
+app.post('/magic/spell/:spellName', async (req, res) => {
+  try {
+    const spellName = req.params.spellName;
+    const spell = req.body;
+
+    if (!MAGIC[spellName]) {
+      res.status(404);
+      return res.send({ error: 'Spell not found' });
+    }
+
+    const spellResp = await MAGIC[spellName](spell);
+    res.status(spellResp.success === false ? 400 : 200);
+    return res.send(spellResp);
+  } catch (err) {
+    console.error('MAGIC spell error:', err);
+    res.status(500);
+    res.send({ error: 'Spell execution failed' });
+  }
+});
 
 app.listen(3006);
 console.log('🚀 Fount server running on port 3006');
