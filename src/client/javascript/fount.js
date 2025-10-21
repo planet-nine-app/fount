@@ -50,26 +50,26 @@ const fount = {
 
   getUserByUUID: async (uuid) => {
     const timestamp = new Date().getTime() + '';
-    
+
     const message = timestamp + uuid;
-    
+
     const signature = await sessionless.sign(message);
 
     const res = await get(`${fount.baseURL}user/${uuid}?signature=${signature}&timestamp=${timestamp}`);
-    const user = res.json();
+    const user = await res.json();
 
     return user;
   },
 
   getUserByPublicKey: async (pubKey) => {
     const timestamp = new Date().getTime() + '';
-    
+
     const message = timestamp + pubKey;
-    
+
     const signature = await sessionless.sign(message);
 
     const res = await get(`${fount.baseURL}user/pubKey/${pubKey}?signature=${signature}&timestamp=${timestamp}`);
-    const user = res.json();
+    const user = await res.json();
 
     return user;
   },

@@ -210,8 +210,47 @@ console.log('About to try and get caster: ', spell.casterUUID);
 console.log('resolved', resolved);
 console.log('🔍 DEBUG: spellName =', spellName);
 
-      // Check if spell should give Galactic nineum on joinup
+      // 🌐 FORWARD SPELL TO DESTINATION SERVICES
+      // Get spell definition from spellbook to find destinations
       const spellDefinition = spellbook[spellName];
+      let serviceResponse = {};
+
+      if (spellDefinition && spellDefinition.destinations) {
+        console.log(`🌐 Forwarding spell to ${spellDefinition.destinations.length} destinations`);
+
+        // Filter out fount as destination since we're already here
+        const externalDestinations = spellDefinition.destinations.filter(d => d.stopName !== 'fount');
+
+        // Forward to each destination (usually just one service)
+        for (const destination of externalDestinations) {
+          try {
+            const destinationURL = `${destination.stopURL}${spellName}`;
+            console.log(`  → Forwarding to ${destination.stopName}: ${destinationURL}`);
+
+            const response = await fetch(destinationURL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(req.body)
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log(`  ✅ Response from ${destination.stopName}:`, data);
+
+              // Merge service response data
+              serviceResponse = { ...serviceResponse, ...data };
+            } else {
+              console.log(`  ❌ Error from ${destination.stopName}: ${response.status}`);
+              serviceResponse.error = `Service ${destination.stopName} returned ${response.status}`;
+            }
+          } catch (err) {
+            console.log(`  ❌ Failed to reach ${destination.stopName}:`, err.message);
+            serviceResponse.error = `Failed to reach ${destination.stopName}: ${err.message}`;
+          }
+        }
+      }
+
+      // Check if spell should give Galactic nineum on joinup
 console.log('🔍 DEBUG: spellDefinition =', spellDefinition);
 console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition?.giveGalacticNineum);
       if (spellDefinition?.giveGalacticNineum) {
@@ -511,9 +550,15 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
       }
 
       const signatureMap = {};
+
+      // Merge service response with MAGIC metadata
+      // If service returned an error, set success to false
+      const success = !serviceResponse.error;
+
       return res.send({
-	success: true,
-	signatureMap
+	success,
+	signatureMap,
+	...serviceResponse  // Include all data from the destination service
       });
     }
     res.status(900);

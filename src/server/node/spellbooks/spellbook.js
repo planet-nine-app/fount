@@ -27,11 +27,11 @@ export default {
       {stopName: 'bdo', stopURL: process.env.LOCALHOST ? 'http://localhost:3003/magic/spell/' : `https://${SUBDOMAIN}.bdo.allyabase.com/magic/spell/`},
       {stopName: 'joan', stopURL: process.env.LOCALHOST ? 'http://localhost:3004/magic/spell/' : `https://${SUBDOMAIN}.joan.allyabase.com/magic/spell/`},
       {stopName: 'addie', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.addie.allyabase.com/magic/spell/`},
-      {stopName: 'aretha', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.aretha.allyabase.com/magic/spell/`},
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3004/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'aretha', stopURL: process.env.LOCALHOST ? 'http://localhost:7277/magic/spell/' : `https://${SUBDOMAIN}.aretha.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'sanora', stopURL: process.env.LOCALHOST ? 'http://localhost:7243/magic/spell/' : `https://${SUBDOMAIN}.sanora.allyabase.com/magic/spell/`},
-      {stopName: 'minnie', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.minnie.allyabase.com/magic/spell/`},
-      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:7277/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
+      {stopName: 'minnie', stopURL: process.env.LOCALHOST ? 'http://localhost:2525/magic/spell/' : `https://${SUBDOMAIN}.minnie.allyabase.com/magic/spell/`},
+      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -55,7 +55,7 @@ export default {
   createProduct: {
     cost: 200, // MP cost
     destinations: [
-      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
+      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3000/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`},
       {stopName: 'sanora', stopURL: process.env.LOCALHOST ? 'http://localhost:7243/magic/spell/' : `https://${SUBDOMAIN}.sanora.allyabase.com/magic/spell/`}
     ],
@@ -71,9 +71,9 @@ export default {
   createPost: {
     cost: 100, // MP cost
     destinations: [
-      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
+      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3000/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`},
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3004/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`}
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`}
     ],
     resolver: 'fount',
     mp: true,
@@ -87,7 +87,7 @@ export default {
   createBDO: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
+      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3000/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`},
       {stopName: 'bdo', stopURL: process.env.LOCALHOST ? 'http://localhost:3003/magic/spell/' : `https://${SUBDOMAIN}.bdo.allyabase.com/magic/spell/`}
     ],
@@ -103,9 +103,9 @@ export default {
   createVideo: {
     cost: 150, // MP cost
     destinations: [
-      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
+      {stopName: 'julia', stopURL: process.env.LOCALHOST ? 'http://localhost:3000/magic/spell/' : `https://${SUBDOMAIN}.julia.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`},
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3004/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`}
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`}
     ],
     resolver: 'fount',
     mp: true,
@@ -407,7 +407,7 @@ export default {
   doloresUserCreate: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -417,7 +417,7 @@ export default {
   doloresUserPost: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -427,7 +427,7 @@ export default {
   doloresAdminFeeds: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -437,7 +437,7 @@ export default {
   doloresUserShortFormVideo: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -447,7 +447,7 @@ export default {
   doloresUserVideoTags: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -457,7 +457,7 @@ export default {
   doloresAdminInstagramCredentials: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -467,7 +467,7 @@ export default {
   doloresAdminInstagramCredentialsDelete: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -477,7 +477,7 @@ export default {
   doloresAdminInstagramRefresh: {
     cost: 50, // MP cost
     destinations: [
-      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3005/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
+      {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',

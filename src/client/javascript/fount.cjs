@@ -82,6 +82,16 @@ const fount = {
     return response;
   },
 
+  castSpell: async (spellName, spell) => {
+    // Ensure spell has the spell name property
+    if (!spell.spell) {
+      spell.spell = spellName;
+    }
+    const res = await post(`${fount.baseURL}resolve/${spellName}`, spell);
+    const response = await res.json();
+    return response;
+  },
+
   grant: async (uuid, destinationUUID, amount, description) => {
     const payload = {
       timestamp: new Date().getTime(),
