@@ -109,5 +109,49 @@ This pattern allows Fount's internal operations to benefit from the same MAGIC p
 - Automatic nineum probability (200 MP = 1 nineum)
 - Gateway reward distribution (10% of experience)
 
+## Nexus Portal Integration (October 2025)
+
+Fount now serves the Nexus ecosystem portal, consolidating two services into one central hub:
+
+### Portal Location
+- **URL**: `http://localhost:3006/nexus`
+- **Files**: Served from `/fount/public/nexus/`
+
+### Nexus API Routes
+All Nexus API endpoints are now served by Fount:
+- `/api/ping` - Health check
+- `/api/info` - Server information
+- `/api/services/status` - Service health monitoring
+- `/api/services/health` - Service health checks
+- `/api/bases/status` - Base connection status
+- `/api/bases/available` - Available bases discovery
+- `/api/content/feed` - Content aggregation
+- `/api/shopping/products` - Product catalog
+- `/api/shopping/categories` - Shopping categories
+- `/api/communications/conversations` - Communications
+
+### Portal Cards
+The Nexus portal features 5 main portals:
+1. **Content & Social** - Blogs, photos, videos, social feeds
+2. **Communications** - P2P messaging and cross-base chat
+3. **Shopping** - Digital goods marketplace
+4. **Base Discovery** - Connect and manage base servers
+5. **Music Player** - Canimus audio feeds (links to Dolores on port 3007)
+
+### Music Player Portal
+A new animated portal card features:
+- **Rotating vinyl record** with SVG animations
+- **Animated waveform** with pulsing audio bars
+- **Floating music notes**
+- **Pink gradient theme** (#EC4899 to #DB2777)
+- **Links to**: Dolores audio player at `http://localhost:3007/audio-player.html`
+
+### Architecture Benefits
+By consolidating Nexus into Fount:
+- **Single port**: Everything accessible from port 3006
+- **Unified authentication**: Shared MAGIC protocol authentication
+- **Simplified deployment**: One less service to manage
+- **Conceptual clarity**: Fount is both the "fountain" (MAGIC resolver) and "nexus" (ecosystem portal)
+
 ## Last Updated
-October 14, 2025 - Completed full MAGIC protocol conversion. All 7 internal routes now accessible via MAGIC spells with self-resolution pattern. Fount remains the central resolver for all Planet Nine MAGIC spells.
+October 22, 2025 - Integrated Nexus portal into Fount with animated music player portal card. Completed full MAGIC protocol conversion. All 7 internal routes now accessible via MAGIC spells with self-resolution pattern. Fount remains the central resolver for all Planet Nine MAGIC spells.

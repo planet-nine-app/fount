@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping - Planet Nine Marketplace</title>
+    <link rel="stylesheet" href="css/nexus.css">
+    <link rel="stylesheet" href="css/shopping.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <div class="nexus-container">
+        <!-- Header with Back Navigation -->
+        <header class="nexus-header">
+            <div class="header-navigation">
+                <button class="back-button" onclick="goBack()">
+                    <svg viewBox="0 0 24 24" class="back-icon">
+                        <path d="M19 12H5m7-7l-7 7 7 7" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    Back to Portal
+                </button>
+            </div>
+            <div class="planet-nine-logo">
+                <svg viewBox="0 0 120 40" class="logo-svg">
+                    <circle cx="20" cy="20" r="15" fill="#4A90E2" stroke="#2E5C8A" stroke-width="2"/>
+                    <text x="45" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2E5C8A">Planet Nine</text>
+                </svg>
+            </div>
+            <div class="connection-status" id="connectionStatus">
+                <svg viewBox="0 0 24 24" class="status-icon">
+                    <circle cx="12" cy="12" r="8" fill="#10B981" stroke="#059669" stroke-width="2"/>
+                    <circle cx="12" cy="12" r="3" fill="white"/>
+                </svg>
+                <span class="status-text">Marketplace Connected</span>
+            </div>
+        </header>
+
+        <!-- Shopping Content -->
+        <main class="shopping-main">
+            <div class="shopping-header">
+                <h1 class="shopping-title">🛍️ Planet Nine Marketplace</h1>
+                <p class="shopping-subtitle">Discover and purchase products from across the Planet Nine ecosystem</p>
+
+                <!-- Environment & Base Selector -->
+                <div class="marketplace-controls">
+                    <div class="environment-selector">
+                        <label for="environment-select">Environment:</label>
+                        <select id="environment-select" onchange="switchEnvironment()">
+                            <option value="dev">Dev Server</option>
+                            <option value="test">Test Ecosystem</option>
+                            <option value="local">Local Development</option>
+                        </select>
+                    </div>
+                    <div class="refresh-controls">
+                        <button id="refresh-products" onclick="loadProducts()" class="refresh-button">
+                            <svg viewBox="0 0 24 24" class="refresh-icon">
+                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <path d="M21 3v5h-5" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <path d="M3 21v-5h5" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                            Refresh Products
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading products from Sanora...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="error-container" style="display: none;">
+                <div class="error-icon">⚠️</div>
+                <h3>Unable to Load Products</h3>
+                <p id="error-message">Could not connect to Sanora service.</p>
+                <button onclick="loadProducts()" class="retry-button">Try Again</button>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="products-container" class="products-grid" style="display: none;">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-container" style="display: none;">
+                <div class="empty-icon">🏪</div>
+                <h3>No Products Available</h3>
+                <p>No products found in the current environment. Try switching environments or check back later.</p>
+            </div>
+        </main>
+
+        <!-- Product Modal -->
+        <div id="product-modal" class="product-modal" style="display: none;">
+            <div class="modal-backdrop" onclick="closeProductModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Product Details</h2>
+                    <button class="modal-close" onclick="closeProductModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-product-details">
+                        <!-- Product details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-purchase-btn" class="purchase-button" onclick="purchaseProduct()">
+                        💳 Purchase
+                    </button>
+                    <button class="modal-cancel" onclick="closeProductModal()">Cancel</button>
+                </div>
+
+                <!-- Payment Section (initially hidden) -->
+                <div id="payment-section" class="payment-section" style="display: none;">
+                    <div class="payment-header">
+                        <h3>Complete Your Purchase</h3>
+                        <div class="purchase-total">
+                            <span class="total-label">Total:</span>
+                            <span id="total-amount" class="total-amount">$0.00</span>
+                        </div>
+                    </div>
+
+                    <form id="payment-form" class="payment-form">
+                        <div id="payment-element" class="payment-element-container"></div>
+                        <button id="submit-payment" class="submit-payment-button" type="submit" disabled>
+                            Complete Purchase
+                        </button>
+                        <div id="payment-error" class="payment-error" style="display: none;"></div>
+                        <div id="payment-loading" class="payment-loading" style="display: none;">
+                            Processing payment...
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/shared/environment-config.js"></script>
+    <script src="js/shopping.js"></script>
+</body>
+</html>

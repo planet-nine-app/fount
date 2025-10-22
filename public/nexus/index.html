@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Planet Nine Ecosystem Portal</title>
+    <link rel="stylesheet" href="css/nexus.css">
+    
+    <!-- Shared utilities for menu support -->
+    <script src="../shared/utils/menu-utils.js"></script>
+    <script src="../shared/components/menu-display.js"></script>
+    <script src="../shared/themes/simple-theme.js"></script>
+</head>
+<body>
+    <div class="nexus-container">
+        <!-- Header with Planet Nine branding -->
+        <header class="nexus-header">
+            <div class="planet-nine-logo">
+                <svg viewBox="0 0 120 40" class="logo-svg">
+                    <circle cx="20" cy="20" r="15" fill="#4A90E2" stroke="#2E5C8A" stroke-width="2"/>
+                    <text x="45" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2E5C8A">Planet Nine</text>
+                </svg>
+            </div>
+            <div class="connection-status" id="connectionStatus">
+                <svg viewBox="0 0 24 24" class="status-icon">
+                    <circle cx="12" cy="12" r="8" fill="#10B981" stroke="#059669" stroke-width="2"/>
+                    <circle cx="12" cy="12" r="3" fill="white"/>
+                </svg>
+                <span class="status-text">Connected to 3 bases</span>
+            </div>
+        </header>
+
+        <!-- Main Portal Grid -->
+        <main class="portal-grid">
+            <h1 class="portal-title">Welcome to the Planet Nine Ecosystem</h1>
+            <p class="portal-subtitle">Discover content, connect with communities, shop independently, and manage your digital presence</p>
+            
+            <!-- Four Main Portals -->
+            <div class="portals-container">
+                <!-- Content & Social Portal -->
+                <div class="portal-card" data-portal="content">
+                    <svg viewBox="0 0 200 200" class="portal-svg">
+                        <defs>
+                            <linearGradient id="contentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667EEA;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764BA2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="180" height="180" x="10" y="10" rx="20" fill="url(#contentGradient)" stroke="#4C51BF" stroke-width="2"/>
+                        
+                        <!-- Content icons: blog, photo, video, social -->
+                        <g transform="translate(30, 30)">
+                            <!-- Blog post icon -->
+                            <rect x="10" y="20" width="40" height="30" rx="4" fill="white" opacity="0.9"/>
+                            <line x1="15" y1="30" x2="45" y2="30" stroke="#4C51BF" stroke-width="2"/>
+                            <line x1="15" y1="37" x2="35" y2="37" stroke="#4C51BF" stroke-width="1.5"/>
+                            
+                            <!-- Photo icon -->
+                            <rect x="70" y="20" width="40" height="30" rx="4" fill="white" opacity="0.9"/>
+                            <circle cx="85" cy="32" r="6" fill="#4C51BF"/>
+                            <polygon points="70,42 80,35 90,40 110,35 110,50 70,50" fill="#E2E8F0"/>
+                            
+                            <!-- Video icon -->
+                            <rect x="10" y="70" width="40" height="30" rx="4" fill="white" opacity="0.9"/>
+                            <polygon points="22,80 22,90 35,85" fill="#4C51BF"/>
+                            
+                            <!-- Social icon -->
+                            <rect x="70" y="70" width="40" height="30" rx="4" fill="white" opacity="0.9"/>
+                            <circle cx="80" cy="80" r="4" fill="#4C51BF"/>
+                            <circle cx="100" cy="80" r="4" fill="#4C51BF"/>
+                            <path d="M 80 85 Q 90 95 100 85" stroke="#4C51BF" stroke-width="2" fill="none"/>
+                        </g>
+                        
+                        <text x="100" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Content & Social</text>
+                        <text x="100" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.9">Blogs • Photos • Videos • Social</text>
+                    </svg>
+                </div>
+
+                <!-- Communications Portal -->
+                <div class="portal-card" data-portal="communications">
+                    <svg viewBox="0 0 200 200" class="portal-svg">
+                        <defs>
+                            <linearGradient id="commGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#48BB78;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#38A169;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="180" height="180" x="10" y="10" rx="20" fill="url(#commGradient)" stroke="#2F855A" stroke-width="2"/>
+                        
+                        <!-- Chat bubbles and connections -->
+                        <g transform="translate(40, 40)">
+                            <!-- Chat bubble 1 -->
+                            <ellipse cx="30" cy="30" rx="25" ry="18" fill="white" opacity="0.9"/>
+                            <text x="30" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#2F855A">Hi!</text>
+                            
+                            <!-- Chat bubble 2 -->
+                            <ellipse cx="90" cy="60" rx="30" ry="20" fill="white" opacity="0.9"/>
+                            <text x="90" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#2F855A">Hello</text>
+                            
+                            <!-- Connection lines -->
+                            <path d="M 55 35 Q 70 45 65 55" stroke="white" stroke-width="3" fill="none" opacity="0.7"/>
+                            
+                            <!-- P2P nodes -->
+                            <circle cx="20" cy="90" r="8" fill="white" opacity="0.9"/>
+                            <circle cx="60" cy="100" r="8" fill="white" opacity="0.9"/>
+                            <circle cx="100" cy="90" r="8" fill="white" opacity="0.9"/>
+                            <line x1="28" y1="90" x2="52" y2="100" stroke="white" stroke-width="2" opacity="0.7"/>
+                            <line x1="68" y1="100" x2="92" y2="90" stroke="white" stroke-width="2" opacity="0.7"/>
+                        </g>
+                        
+                        <text x="100" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Communications</text>
+                        <text x="100" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.9">P2P Messaging • Cross-Base Chat</text>
+                    </svg>
+                </div>
+
+                <!-- Shopping Portal -->
+                <div class="portal-card" data-portal="shopping">
+                    <svg viewBox="0 0 200 200" class="portal-svg">
+                        <defs>
+                            <linearGradient id="shopGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ED8936;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#DD6B20;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="180" height="180" x="10" y="10" rx="20" fill="url(#shopGradient)" stroke="#C05621" stroke-width="2"/>
+                        
+                        <!-- Shopping items grid -->
+                        <g transform="translate(35, 35)">
+                            <!-- Product cards -->
+                            <rect x="10" y="10" width="35" height="35" rx="6" fill="white" opacity="0.9"/>
+                            <text x="27" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">📚</text>
+                            
+                            <rect x="55" y="10" width="35" height="35" rx="6" fill="white" opacity="0.9"/>
+                            <text x="72" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">🎵</text>
+                            
+                            <rect x="100" y="10" width="35" height="35" rx="6" fill="white" opacity="0.9"/>
+                            <text x="117" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">💻</text>
+                            
+                            <rect x="10" y="55" width="35" height="35" rx="6" fill="white" opacity="0.9"/>
+                            <text x="27" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">🎓</text>
+                            
+                            <rect x="55" y="55" width="35" height="35" rx="6" fill="white" opacity="0.9"/>
+                            <text x="72" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">🎨</text>
+                            
+                            <rect x="100" y="55" width="35" height="35" rx="6" fill="white" opacity="0.9"/>
+                            <text x="117" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">🎫</text>
+                            
+                            <!-- Shopping cart -->
+                            <g transform="translate(60, 100)">
+                                <path d="M 5 5 L 25 5 L 30 25 L 10 25 Z" stroke="white" stroke-width="3" fill="none" opacity="0.9"/>
+                                <circle cx="15" cy="30" r="3" fill="white" opacity="0.9"/>
+                                <circle cx="25" cy="30" r="3" fill="white" opacity="0.9"/>
+                            </g>
+                        </g>
+                        
+                        <text x="100" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Shopping</text>
+                        <text x="100" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.9">Digital Goods • Independent Commerce</text>
+                    </svg>
+                </div>
+
+                <!-- Base Discovery Portal -->
+                <div class="portal-card" data-portal="bases">
+                    <svg viewBox="0 0 200 200" class="portal-svg">
+                        <defs>
+                            <linearGradient id="baseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#9F7AEA;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#805AD5;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="180" height="180" x="10" y="10" rx="20" fill="url(#baseGradient)" stroke="#6B46C1" stroke-width="2"/>
+
+                        <!-- Base network diagram -->
+                        <g transform="translate(50, 50)">
+                            <!-- Central hub -->
+                            <circle cx="50" cy="50" r="15" fill="white" opacity="0.9"/>
+                            <text x="50" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B46C1">YOU</text>
+
+                            <!-- Connected bases -->
+                            <circle cx="20" cy="20" r="12" fill="white" opacity="0.8"/>
+                            <text x="20" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6B46C1">DEV</text>
+
+                            <circle cx="80" cy="20" r="12" fill="white" opacity="0.8"/>
+                            <text x="80" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6B46C1">PROD</text>
+
+                            <circle cx="20" cy="80" r="12" fill="white" opacity="0.6"/>
+                            <text x="20" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6B46C1">NEW</text>
+
+                            <circle cx="80" cy="80" r="12" fill="white" opacity="0.8"/>
+                            <text x="80" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6B46C1">TEST</text>
+
+                            <!-- Connection lines -->
+                            <line x1="35" y1="35" x2="35" y2="35" stroke="white" stroke-width="2" opacity="0.7"/>
+                            <line x1="32" y1="30" x2="42" y2="42" stroke="white" stroke-width="2" opacity="0.7"/>
+                            <line x1="65" y1="30" x2="58" y2="42" stroke="white" stroke-width="2" opacity="0.7"/>
+                            <line x1="68" y1="70" x2="58" y2="58" stroke="white" stroke-width="2" opacity="0.7"/>
+                            <line x1="32" y1="70" x2="42" y2="58" stroke="white" stroke-width="2" opacity="0.7"/>
+
+                            <!-- Discovery indicator -->
+                            <g transform="translate(85, 10)">
+                                <circle cx="0" cy="0" r="3" fill="#FED7D7" opacity="0.9"/>
+                                <circle cx="0" cy="0" r="1" fill="#E53E3E"/>
+                            </g>
+                        </g>
+
+                        <text x="100" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Base Discovery</text>
+                        <text x="100" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.9">Connect • Manage • Discover</text>
+                    </svg>
+                </div>
+
+                <!-- Music Player Portal (Dolores Audio) -->
+                <div class="portal-card" data-portal="music">
+                    <svg viewBox="0 0 200 200" class="portal-svg">
+                        <defs>
+                            <linearGradient id="musicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#EC4899;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#DB2777;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="waveGradient" x1="0%" y1="50%" x2="100%" y2="50%">
+                                <stop offset="0%" style="stop-color:white;stop-opacity:0.3" />
+                                <stop offset="50%" style="stop-color:white;stop-opacity:0.9" />
+                                <stop offset="100%" style="stop-color:white;stop-opacity:0.3" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="180" height="180" x="10" y="10" rx="20" fill="url(#musicGradient)" stroke="#BE185D" stroke-width="2"/>
+
+                        <!-- Vinyl record -->
+                        <g transform="translate(100, 65)">
+                            <circle cx="0" cy="0" r="35" fill="white" opacity="0.15"/>
+                            <circle cx="0" cy="0" r="30" fill="white" opacity="0.2"/>
+                            <circle cx="0" cy="0" r="25" fill="white" opacity="0.3"/>
+                            <circle cx="0" cy="0" r="20" fill="white" opacity="0.4"/>
+                            <circle cx="0" cy="0" r="15" fill="white" opacity="0.5"/>
+                            <circle cx="0" cy="0" r="10" fill="white" opacity="0.6"/>
+                            <circle cx="0" cy="0" r="6" fill="#BE185D" opacity="0.9"/>
+                            <circle cx="0" cy="0" r="2" fill="white" opacity="0.9"/>
+
+                            <!-- Rotation lines for vinyl effect -->
+                            <line x1="-35" y1="0" x2="-10" y2="0" stroke="white" stroke-width="1.5" opacity="0.4"/>
+                            <line x1="10" y1="0" x2="35" y2="0" stroke="white" stroke-width="1.5" opacity="0.4"/>
+                            <line x1="0" y1="-35" x2="0" y2="-10" stroke="white" stroke-width="1.5" opacity="0.4"/>
+                            <line x1="0" y1="10" x2="0" y2="35" stroke="white" stroke-width="1.5" opacity="0.4"/>
+
+                            <!-- Add rotation animation hint with small circles -->
+                            <animateTransform attributeName="transform" type="rotate" from="0 100 65" to="360 100 65" dur="8s" repeatCount="indefinite"/>
+                        </g>
+
+                        <!-- Music notes floating -->
+                        <g opacity="0.9">
+                            <text x="35" y="45" font-family="Arial, sans-serif" font-size="24" fill="white">♪</text>
+                            <text x="155" y="55" font-family="Arial, sans-serif" font-size="20" fill="white" opacity="0.8">♫</text>
+                            <text x="25" y="125" font-family="Arial, sans-serif" font-size="18" fill="white" opacity="0.7">♬</text>
+                        </g>
+
+                        <!-- Waveform at bottom -->
+                        <g transform="translate(40, 115)">
+                            <rect x="0" y="10" width="4" height="15" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="15;25;15" dur="0.6s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="10;5;10" dur="0.6s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="10" y="8" width="4" height="19" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="19;30;19" dur="0.7s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="8;3;8" dur="0.7s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="20" y="12" width="4" height="11" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="11;20;11" dur="0.5s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="12;7;12" dur="0.5s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="30" y="5" width="4" height="25" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="25;35;25" dur="0.8s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="5;0;5" dur="0.8s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="40" y="10" width="4" height="15" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="15;22;15" dur="0.6s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="10;6;10" dur="0.6s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="50" y="8" width="4" height="19" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="19;28;19" dur="0.7s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="8;4;8" dur="0.7s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="60" y="11" width="4" height="13" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="13;24;13" dur="0.55s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="11;5;11" dur="0.55s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="70" y="7" width="4" height="21" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="21;32;21" dur="0.75s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="7;2;7" dur="0.75s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="80" y="10" width="4" height="15" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="15;26;15" dur="0.65s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="10;4;10" dur="0.65s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="90" y="9" width="4" height="17" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="17;27;17" dur="0.7s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="9;4;9" dur="0.7s" repeatCount="indefinite"/>
+                            </rect>
+                            <rect x="100" y="12" width="4" height="11" fill="white" opacity="0.7">
+                                <animate attributeName="height" values="11;18;11" dur="0.5s" repeatCount="indefinite"/>
+                                <animate attributeName="y" values="12;8;12" dur="0.5s" repeatCount="indefinite"/>
+                            </rect>
+                        </g>
+
+                        <text x="100" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Music Player</text>
+                        <text x="100" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white" opacity="0.9">Canimus Feeds • Multi-Artist</text>
+                    </svg>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer with ecosystem info -->
+        <footer class="nexus-footer">
+            <div class="ecosystem-stats">
+                <div class="stat-item">
+                    <svg viewBox="0 0 24 24" class="stat-icon">
+                        <circle cx="12" cy="8" r="6" fill="#6B7280"/>
+                        <path d="M12 14c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z" fill="#6B7280"/>
+                    </svg>
+                    <span>14 Apps</span>
+                </div>
+                <div class="stat-item">
+                    <svg viewBox="0 0 24 24" class="stat-icon">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="none" stroke="#6B7280" stroke-width="2"/>
+                        <circle cx="9" cy="9" r="2" fill="#6B7280"/>
+                        <path d="M21 15.5C21 17.43 18.31 19 15 19s-6-1.57-6-3.5" fill="none" stroke="#6B7280" stroke-width="2"/>
+                    </svg>
+                    <span>12+ Services</span>
+                </div>
+                <div class="stat-item">
+                    <svg viewBox="0 0 24 24" class="stat-icon">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="#6B7280" stroke-width="2"/>
+                        <polygon points="10,8 16,12 10,16" fill="#6B7280"/>
+                    </svg>
+                    <span>Privacy First</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/shared/api-client.js"></script>
+</body>
+</html>
