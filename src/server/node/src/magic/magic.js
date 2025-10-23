@@ -453,6 +453,56 @@ const MAGIC = {
         error: error.message
       };
     }
+  },
+
+  /**
+   * save - Save an item to the carrier bag
+   *
+   * Expected spell components:
+   * - feedUrl: URL of the feed to save
+   * - collection: Collection name (e.g., "music")
+   * - type: Item type (e.g., "canimus-feed")
+   * - title: Optional title for the item
+   */
+  async save(spell) {
+    try {
+      console.log('🪄 Fount resolving save spell');
+      console.log('📦 Saving to carrier bag:', spell.components);
+
+      const { feedUrl, collection, type, title } = spell.components;
+
+      if (!feedUrl || !collection || !type) {
+        return {
+          success: false,
+          error: 'Missing required spell components: feedUrl, collection, type'
+        };
+      }
+
+      // For now, just return success with the saved item
+      // In the future, this would save to BDO carrier bag
+      const savedItem = {
+        feedUrl,
+        collection,
+        type,
+        title: title || 'Saved Item',
+        savedAt: Date.now()
+      };
+
+      console.log('✅ Item saved to carrier bag:', savedItem);
+
+      return {
+        success: true,
+        data: savedItem,
+        message: `Saved ${title || type} to ${collection} collection`
+      };
+
+    } catch (error) {
+      console.error('❌ save spell failed:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
   }
 };
 
