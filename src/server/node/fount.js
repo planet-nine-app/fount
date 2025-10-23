@@ -64,7 +64,7 @@ const SUBDOMAIN = process.env.SUBDOMAIN || 'dev';
 bdo.baseURL = process.env.LOCALHOST ? 'http://localhost:3003/' : `${SUBDOMAIN}.bdo.allyabase.com/`;
 addie.baseURL = process.env.LOCALHOST ? 'http://localhost:3005/' : `${SUBDOMAIN}.addie.allyabase.com/`;
 
-const JULIA_URL = process.env.LOCALHOST ? 'http://localhost:3001/' : `https://${SUBDOMAIN}.julia.allyabase.com/`;
+const JULIA_URL = process.env.LOCALHOST ? 'http://localhost:3000/' : `https://${SUBDOMAIN}.julia.allyabase.com/`;
 
 const bdoHashInput = `${SUBDOMAIN}fount`;
 
@@ -171,7 +171,7 @@ app.post('/magic/spell/:spellName', async (req, res) => {
 // ============================================================================
 
 const NEXUS_SERVICES = {
-  julia: process.env.LOCALHOST ? 'http://localhost:3001/' : `https://${SUBDOMAIN}.julia.allyabase.com/`,
+  julia: process.env.LOCALHOST ? 'http://localhost:3000/' : `https://${SUBDOMAIN}.julia.allyabase.com/`,
   continuebee: process.env.LOCALHOST ? 'http://localhost:3002/' : `https://${SUBDOMAIN}.continuebee.allyabase.com/`,
   bdo: process.env.LOCALHOST ? 'http://localhost:3003/' : `https://${SUBDOMAIN}.bdo.allyabase.com/`,
   fount: process.env.LOCALHOST ? 'http://localhost:3006/' : `https://${SUBDOMAIN}.fount.allyabase.com/`,
