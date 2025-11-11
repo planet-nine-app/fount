@@ -1,6 +1,6 @@
 Each piece of Nineum is represented by a 128-bit integer. This integer encodes a number of properties that are useful for developers to utilize to develop cool experiences using Nineum. They breakdown as follows:
 
-One byte - Universe: This is the universe that the protocol lives in. Future universes are possible, but unexplored as of now.
+One byte - ~Universe~ Galaxy (There is no multiverse): This is the galaxy that the protocol lives in. Future galaxies are possible, but unexplored as of now.
 
 Four bytes - Address: This is the address of the resource, many other addresses can live in the same universe as this dual-resource protocol. Future addresses will be for future resources.
 
