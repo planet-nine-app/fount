@@ -250,6 +250,16 @@ export default {
     mp: true
   },
 
+  arethaUserPurchase: {
+    cost: 0, // Cost is specified in ticket price parameter
+    destinations: [
+      {stopName: 'aretha', stopURL: process.env.LOCALHOST ? 'http://localhost:7277/magic/spell/' : `https://${SUBDOMAIN}.aretha.allyabase.com/magic/spell/`},
+      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
+    ],
+    resolver: 'fount',
+    mp: true
+  },
+
   // Continuebee MAGIC-routed operations
   continuebeeUserCreate: {
     cost: 50, // MP cost

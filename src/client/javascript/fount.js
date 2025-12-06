@@ -31,6 +31,23 @@ const _delete = async (url, payload) => {
 const fount = {
   baseURL: 'https://dev.fount.allyabase.com/',
 
+  /**
+   * Configure the Fount client for different environments
+   * @param {Object} config - Configuration options
+   * @param {string} config.baseURL - Direct base URL (e.g., 'http://127.0.0.1:5117/')
+   * @param {string} config.wikiBaseURL - Wiki proxy base URL (e.g., 'http://127.0.0.1:5124')
+   *                                      Will construct URL as: {wikiBaseURL}/plugin/allyabase/fount/
+   */
+  configure: (config) => {
+    if (config.wikiBaseURL) {
+      // Wiki proxy mode: route through wiki plugin
+      fount.baseURL = `${config.wikiBaseURL.replace(/\/$/, '')}/plugin/allyabase/fount/`;
+    } else if (config.baseURL) {
+      // Direct mode: use base URL as-is
+      fount.baseURL = config.baseURL.endsWith('/') ? config.baseURL : config.baseURL + '/';
+    }
+  },
+
   createUser: async (saveKeys, getKeys) => {
     const keys = (await getKeys()) || (await sessionless.generateKeys(saveKeys, getKeys))
     sessionless.getKeys = getKeys;
