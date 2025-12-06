@@ -74,6 +74,12 @@ const getUserByPublicKey = async (req, res) => {
     const foundUser = await user.getUserByPublicKey(pubKey);
   console.log(signature);
 
+    // Check if user exists before trying to access properties
+    if (!foundUser) {
+      res.status(404);
+      return res.send({error: 'user not found'});
+    }
+
     if(!signature || !sessionless.verifySignature(signature, message, foundUser.pubKey)) {
       res.status(403);
       return res.send({error: 'auth error'});
@@ -84,7 +90,7 @@ const getUserByPublicKey = async (req, res) => {
     res.send(foundUser);
   } catch(err) {
 console.warn(err);
-    res.status(404);      
+    res.status(404);
     res.send({error: 'not found'});
   }
 };

@@ -32,6 +32,7 @@ pub struct FountUser {
     #[serde(rename = "lastExperienceCalculated")]
     pub last_experience_calculated: u64,
     pub experience_pool: u32,
+    #[serde(default)]
     pub nineum_count: u64,
     pub ordinal: u32,
     pub uuid: String
@@ -86,7 +87,7 @@ impl Fount {
         let timestamp = Self::get_timestamp();
         let pub_key = self.sessionless.public_key().to_hex();
         let signature = self.sessionless.sign(&format!("{}{}", timestamp, pub_key)).to_hex();
-        
+
         let payload = json!({
             "timestamp": timestamp,
             "pubKey": pub_key,
@@ -94,8 +95,18 @@ impl Fount {
         }).as_object().unwrap().clone();
 
         let url = format!("{}user/create", self.base_url);
+        println!("🦀 fount-rs: Creating user at {}", url);
+        println!("🦀 fount-rs: Payload: {:?}", payload);
+
         let res = self.put(&url, serde_json::Value::Object(payload)).await?;
-        let user: FountUser = res.json().await?;
+        println!("🦀 fount-rs: Response status: {}", res.status());
+
+        // Get response body as text first to see what we're getting
+        let response_text = res.text().await?;
+        println!("🦀 fount-rs: Response body: {}", response_text);
+
+        let user: FountUser = serde_json::from_str(&response_text)?;
+        println!("🦀 fount-rs: User created successfully: {}", user.uuid);
 
         Ok(user)
     }
@@ -119,8 +130,13 @@ impl Fount {
         let signature = self.sessionless.sign(&message).to_hex();
 
         let url = format!("{}user/pubKey/{}?timestamp={}&signature={}", self.base_url, public_key, timestamp, signature);
+        println!("🦀 fount-rs: Getting user by public key at {}", url);
+
         let res = self.get(&url).await?;
+        println!("🦀 fount-rs: Response status: {}", res.status());
+
         let user: FountUser = res.json().await?;
+        println!("🦀 fount-rs: User found: {}", user.uuid);
 
         Ok(user)
     }

@@ -24,8 +24,7 @@ console.log('uuid', uuid);
     const uuid = sessionless.generateUUID();
     user.uuid = uuid;
     user.pubKey = pubKey;
-    user.ordinal = 1;
-    user.mp = 1000;
+    // Note: Don't set ordinal, mp, experience, etc. here - user.putUser already handles that
     await client.set(`pubKey:${pubKey}`, uuid);
     await client.set(`user:${uuid}`, JSON.stringify(user));
     return uuid;
@@ -77,7 +76,7 @@ console.log('current nineum', currentNineum);
       }
     });
     
-    user.nineumCount = allNineum.count;
+    user.nineumCount = allNineum.length;
     await db.saveUser(user);    
 
     await client.set('galaxyMap', JSON.stringify(galaxyMap));

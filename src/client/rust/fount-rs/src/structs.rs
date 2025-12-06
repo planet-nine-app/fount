@@ -37,12 +37,11 @@ pub struct Spell {
     pub spell: String,
     #[serde(rename = "casterUUID")]
     pub caster_uuid: String,
-    pub total_cost: u32, 
+    pub total_cost: u32,
     pub mp: bool,
     pub ordinal: u32,
     pub caster_signature: String,
-    #[serde(flatten)]
-    pub extra: HashMap<String, Value>,
+    pub components: HashMap<String, Value>,
     pub gateways: Vec<Gateway>
 }
 
@@ -56,7 +55,7 @@ impl Default for Spell {
 	    mp: true,
 	    ordinal: 1,
 	    caster_signature: "".to_string(),
-	    extra: HashMap::<String, Value>::new(),
+	    components: HashMap::<String, Value>::new(),
 	    gateways: Vec::<Gateway>::new()
         }
     }
@@ -66,7 +65,8 @@ impl Default for Spell {
 #[serde(rename_all="camelCase")]
 pub struct SpellResult {
     pub success: bool,
-    // arbitrary json somehow?
+    #[serde(flatten)]
+    pub extra: HashMap<String, Value>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
