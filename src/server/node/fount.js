@@ -3,8 +3,20 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// import.meta.url is undefined under esbuild's CJS bundling target (used by
+// Netlify's function bundler), unlike real ESM (e.g. `node fount.js` on the
+// droplet) - fall back to cwd rather than crashing the whole bundled
+// function at module load. Static file serving below (which uses this) just
+// won't find real files in that context - a contained degradation, not a
+// full-service outage, since none of fount's actual API routes depend on it.
+let __filename, __dirname;
+try {
+  __filename = fileURLToPath(import.meta.url);
+  __dirname = path.dirname(__filename);
+} catch {
+  __filename = process.cwd();
+  __dirname = process.cwd();
+}
 import { createHash } from 'node:crypto';
 import { 
   putUser, 
@@ -172,13 +184,12 @@ app.post('/magic/spell/:spellName', async (req, res) => {
 
 const NEXUS_SERVICES = {
   julia: process.env.LOCALHOST ? 'http://localhost:3000/' : `https://${SUBDOMAIN}.julia.allyabase.com/`,
-  continuebee: process.env.LOCALHOST ? 'http://localhost:3002/' : `https://${SUBDOMAIN}.continuebee.allyabase.com/`,
+  continuebee: process.env.LOCALHOST ? 'http://localhost:2999/' : `https://${SUBDOMAIN}.continuebee.allyabase.com/`,
   bdo: process.env.LOCALHOST ? 'http://localhost:3003/' : `https://${SUBDOMAIN}.bdo.allyabase.com/`,
   fount: process.env.LOCALHOST ? 'http://localhost:3006/' : `https://${SUBDOMAIN}.fount.allyabase.com/`,
   addie: process.env.LOCALHOST ? 'http://localhost:3005/' : `https://${SUBDOMAIN}.addie.allyabase.com/`,
   dolores: process.env.LOCALHOST ? 'http://localhost:3007/' : `https://${SUBDOMAIN}.dolores.allyabase.com/`,
   sanora: process.env.LOCALHOST ? 'http://localhost:7243/' : `https://${SUBDOMAIN}.sanora.allyabase.com/`,
-  covenant: process.env.LOCALHOST ? 'http://localhost:3004/' : `https://${SUBDOMAIN}.covenant.allyabase.com/`
 };
 
 // Nexus health check
@@ -770,8 +781,12 @@ app.get('/nexus*', (req, res) => {
 
 // ============================================================================
 
-app.listen(3006);
-console.log('🚀 Fount server running on port 3006');
-console.log('📁 Serving static files from public directory');
-console.log('🪄 castSpell.js available at: http://localhost:3006/castSpell.js');
-console.log('🌍 Nexus portal available at: http://localhost:3006/nexus');
+if (import.meta.url === `file://${process.argv[1]}`) {
+  app.listen(3006);
+  console.log('🚀 Fount server running on port 3006');
+  console.log('📁 Serving static files from public directory');
+  console.log('🪄 castSpell.js available at: http://localhost:3006/castSpell.js');
+  console.log('🌍 Nexus portal available at: http://localhost:3006/nexus');
+}
+
+export default app;

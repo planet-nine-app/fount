@@ -10,12 +10,14 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "dependencies": {
+    "@netlify/blobs": "^10.7.13",
     "addie-js": "latest",
     "bdo-js": "latest",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dayjs": "^1.11.12",
     "express": "^4.19.2",
+    "serverless-http": "^4.0.0",
     "sessionless-node": "latest",
     "stripe": "^16.6.0"
   }

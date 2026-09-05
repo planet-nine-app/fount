@@ -152,7 +152,7 @@ console.log('🪄 Fount resolving spell:', req.params.spellName);
       const permissionCheck = await checkMPAndNineumPermissions(spell.casterUUID, spellName, spell.totalCost);
       if (!permissionCheck.success) {
         console.log(`❌ Permission check failed (${permissionCheck.type}):`, permissionCheck.error);
-        return res.status(900).send({
+        return res.status(400).send({
           success: false,
           error: permissionCheck.error,
           type: permissionCheck.type,
@@ -289,7 +289,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
         const recipientUUID = req.body.recipientUUID;
         if (!recipientUUID) {
           console.log('❌ No recipient specified');
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: 'No recipient UUID specified'
           });
@@ -301,7 +301,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
 
         if (!grantCheck.success) {
           console.log(`❌ Cannot grant: ${grantCheck.error}`);
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: grantCheck.error
           });
@@ -313,7 +313,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
         const recipient = await user.getUser(recipientUUID);
         if (!recipient) {
           console.log('❌ Recipient not found');
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: 'Recipient user not found'
           });
@@ -339,7 +339,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
             break;
           default:
             console.log('❌ Unknown permission level');
-            return res.status(900).send({
+            return res.status(400).send({
               success: false,
               error: 'Unknown permission level'
             });
@@ -361,7 +361,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
 
         if (!nineum.canWriteToSpellbook({ nineum: casterNineum })) {
           console.log('❌ Insufficient permission: requires Stellation or higher');
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: 'Insufficient permission: requires Stellation nineum or higher to write spells'
           });
@@ -372,7 +372,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
 
         if (!newSpellName || !newSpellDefinition) {
           console.log('❌ Missing spell name or definition');
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: 'Missing spellName or spellDefinition in request'
           });
@@ -381,7 +381,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
         // Validate spell definition has required fields
         if (newSpellDefinition.cost === undefined || !newSpellDefinition.destinations || !newSpellDefinition.resolver) {
           console.log('❌ Invalid spell definition: missing required fields');
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: 'Spell definition must include cost, destinations, and resolver'
           });
@@ -403,7 +403,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
         const spellRegex = new RegExp(`${newSpellName}:\\s*{`, 'm');
         if (spellRegex.test(spellbookContent)) {
           console.log(`⚠️  Spell ${newSpellName} already exists`);
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: `Spell ${newSpellName} already exists in spellbook`
           });
@@ -417,7 +417,7 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
         const insertPosition = spellbookContent.lastIndexOf('};');
         if (insertPosition === -1) {
           console.log('❌ Could not find spellbook closing brace');
-          return res.status(900).send({
+          return res.status(400).send({
             success: false,
             error: 'Invalid spellbook format'
           });
@@ -561,11 +561,11 @@ console.log('🔍 DEBUG: spellDefinition?.giveGalacticNineum =', spellDefinition
 	...serviceResponse  // Include all data from the destination service
       });
     }
-    res.status(900);
+    res.status(400);
     res.send({success: false});
   } catch(err) {
 console.warn(err);
-    res.status(900);
+    res.status(400);
     res.send({success: false});
   }
 };

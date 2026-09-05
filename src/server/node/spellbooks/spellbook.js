@@ -31,7 +31,6 @@ export default {
       {stopName: 'dolores', stopURL: process.env.LOCALHOST ? 'http://localhost:3007/magic/spell/' : `https://${SUBDOMAIN}.dolores.allyabase.com/magic/spell/`},
       {stopName: 'sanora', stopURL: process.env.LOCALHOST ? 'http://localhost:7243/magic/spell/' : `https://${SUBDOMAIN}.sanora.allyabase.com/magic/spell/`},
       {stopName: 'minnie', stopURL: process.env.LOCALHOST ? 'http://localhost:2525/magic/spell/' : `https://${SUBDOMAIN}.minnie.allyabase.com/magic/spell/`},
-      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',
@@ -242,6 +241,16 @@ export default {
 
   arethaUserGalaxy: {
     cost: 50, // MP cost
+    destinations: [
+      {stopName: 'aretha', stopURL: process.env.LOCALHOST ? 'http://localhost:7277/magic/spell/' : `https://${SUBDOMAIN}.aretha.allyabase.com/magic/spell/`},
+      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
+    ],
+    resolver: 'fount',
+    mp: true
+  },
+
+  arethaUserPurchase: {
+    cost: 0, // Cost is specified in ticket price parameter
     destinations: [
       {stopName: 'aretha', stopURL: process.env.LOCALHOST ? 'http://localhost:7277/magic/spell/' : `https://${SUBDOMAIN}.aretha.allyabase.com/magic/spell/`},
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
@@ -636,56 +645,6 @@ export default {
     mp: true
   },
 
-  // Covenant MAGIC-routed operations
-  covenantUserCreate: {
-    cost: 50, // MP cost
-    destinations: [
-      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
-      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
-    ],
-    resolver: 'fount',
-    mp: true
-  },
-
-  covenantContract: {
-    cost: 50, // MP cost
-    destinations: [
-      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
-      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
-    ],
-    resolver: 'fount',
-    mp: true
-  },
-
-  covenantContractUpdate: {
-    cost: 50, // MP cost
-    destinations: [
-      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
-      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
-    ],
-    resolver: 'fount',
-    mp: true
-  },
-
-  covenantContractSign: {
-    cost: 50, // MP cost
-    destinations: [
-      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
-      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
-    ],
-    resolver: 'fount',
-    mp: true
-  },
-
-  covenantContractDelete: {
-    cost: 50, // MP cost
-    destinations: [
-      {stopName: 'covenant', stopURL: process.env.LOCALHOST ? 'http://localhost:3011/magic/spell/' : `https://${SUBDOMAIN}.covenant.allyabase.com/magic/spell/`},
-      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
-    ],
-    resolver: 'fount',
-    mp: true
-  },
 
   // Prof MAGIC-routed operations
   profUserProfile: {
@@ -783,6 +742,19 @@ export default {
     cost: 50, // MP cost
     destinations: [
       {stopName: 'fount-magic', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/magic/spell/' : `https://${SUBDOMAIN}.fount.allyabase.com/magic/spell/`},
+      {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
+    ],
+    resolver: 'fount',
+    mp: true
+  },
+
+  // Physical MAGIC: ESP32 wand casts to an ESP32 target over ESP-NOW, target
+  // relays to fount over WiFi. No external service needed - the effect
+  // happens on the target board itself, so this spell only needs fount's
+  // own signature/MP verification (caster + target-as-gateway).
+  wandCast: {
+    cost: 50, // MP cost per cast
+    destinations: [
       {stopName: 'fount', stopURL: process.env.LOCALHOST ? 'http://localhost:3006/resolve/' : `https://${SUBDOMAIN}.fount.allyabase.com/resolve/`}
     ],
     resolver: 'fount',

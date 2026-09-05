@@ -3,7 +3,7 @@ import nineum from '../nineum/nineum.js';
 import sessionless from 'sessionless-node';
 import dayjs from 'dayjs';
 
-await sessionless.generateKeys(() => {}, db.getKeys);
+sessionless.generateKeys(() => {}, db.getKeys); // not awaited: esbuild CJS target disallows top-level await, and the meaningful side effect (setting sessionless's internal getKeys callback) happens synchronously before generateKeys' first internal await anyway
 
 const post = async (url, payload) => {
   return await fetch(url, {
